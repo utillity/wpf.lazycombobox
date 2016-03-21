@@ -6,8 +6,16 @@
 	<SolidColorBrush x:Key="GlyphBrush" Color="Gray" />
 
 	<Style TargetType="{x:Type controls:LazyComboBox}">
-		<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
-		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="Background" Value="{DynamicResource 'ComboBox.Static.Background'}">
+			<!--<Setter.Value>
+				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+					<GradientStop Color="#FFF0F0F0" Offset="0.0"/>
+					<GradientStop Color="#FFE5E5E5" Offset="1.0"/>
+				</LinearGradientBrush>
+			</Setter.Value>-->
+		</Setter>
+		<Setter Property="BorderBrush" Value="{DynamicResource 'ComboBox.Static.Border'}" />
+		<Setter Property="BorderThickness" Value="1" />
 		<Setter Property="SnapsToDevicePixels" Value="True" />
 		<Setter Property="ListStyle">
 			<Setter.Value>
@@ -29,6 +37,15 @@
 					<Setter Property="BorderThickness" Value="1" />
 					<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
 					<Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+				</Style>
+			</Setter.Value>
+		</Setter>
+		<Setter Property="TextBoxStyle">
+			<Setter.Value>
+				<Style TargetType="{x:Type TextBox}">
+					<Setter Property="BorderThickness" Value="0" />
+					<Setter Property="Padding" Value="0,2" />
+					<Setter Property="Background" Value="{DynamicResource 'ComboBox.Static.Editable.Background'}" />
 				</Style>
 			</Setter.Value>
 		</Setter>
@@ -54,18 +71,22 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type controls:LazyComboBox}">
-					<Border Background="{TemplateBinding Background}"
+					<Border x:Name="MainBorder"
+					        Background="{TemplateBinding Background}"
 					        BorderBrush="{TemplateBinding BorderBrush}"
 					        BorderThickness="{TemplateBinding BorderThickness}">
 						<Grid>
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="*" />
 								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="Auto" />
 							</Grid.ColumnDefinitions>
-							<Border x:Name="PART_SelectedItemColumn" Background="Transparent">
-								<ContentPresenter Content="{TemplateBinding SelectedItem}" />
+							<Border x:Name="PART_SelectedItemColumn" Background="Transparent" Padding="2">
+								<TextBlock Text="{TemplateBinding SelectedItemText}" />
 							</Border>
-							<ToggleButton x:Name="PART_DropDownButton" Grid.Column="1" Focusable="false" ClickMode="Press"
+							<ProgressBar x:Name="ProgressBar" Grid.Column="1" Visibility="Collapsed" 
+													 Orientation="Horizontal" IsIndeterminate="True" />
+							<ToggleButton x:Name="PART_DropDownButton" Grid.Column="2" Focusable="false" ClickMode="Press"
 							              IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
 							              Style="{TemplateBinding DropDownButtonStyle}" />
 							<!--<Border x:Name="PART_DropDownButton" Grid.Column="1" Background="Transparent"
@@ -73,15 +94,18 @@
 							        Width="{TemplateBinding DropDownButtonWidth}">
 								<ContentPresenter Style="{TemplateBinding DropDownButtonContentStyle}" />
 							</Border>-->
-							<TextBox x:Name="PART_TextBox" Grid.Column="0" Grid.ColumnSpan="2" Visibility="Hidden"
-							         Text="{Binding TypedText, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" />
+							<TextBox x:Name="PART_TextBox" Grid.Column="0" Visibility="Hidden"
+							         Style="{TemplateBinding TextBoxStyle}"
+							         Text="{Binding TypedText, Delay=500, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" />
 							<Popup x:Name="PART_Popup" Grid.Column="0" Grid.ColumnSpan="2"
 							       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"
 							       Placement="Bottom" MinHeight="60" MaxHeight="200"
 							       IsOpen="{TemplateBinding IsDropDownOpen}">
 								<Border Style="{TemplateBinding PopupBorderStyle}">
 									<ScrollViewer x:Name="PART_ScrollViewer">
-										<ListView Style="{TemplateBinding ListStyle}" ItemsSource="{TemplateBinding ItemsSource}"
+										<ListView x:Name="PART_ListView" 
+															Style="{TemplateBinding ListStyle}" IsSynchronizedWithCurrentItem="True"
+															ItemsSource="{TemplateBinding ItemsSource}"
 										          SelectionMode="Single" />
 									</ScrollViewer>
 								</Border>
@@ -89,11 +113,16 @@
 						</Grid>
 					</Border>
 					<ControlTemplate.Triggers>
+						<Trigger Property="ListUpdating" Value="True">
+							<Setter TargetName="ProgressBar" Property="Visibility" Value="Visible" />
+						</Trigger>
 						<Trigger Property="IsEnabled" Value="False">
 							<Setter TargetName="PART_DropDownButton" Property="Visibility" Value="Collapsed" />
 						</Trigger>
 						<Trigger Property="IsEditing" Value="True">
 							<Setter TargetName="PART_TextBox" Property="Visibility" Value="Visible" />
+							<Setter TargetName="MainBorder" Property="BorderBrush"
+							        Value="{DynamicResource 'ComboBox.Pressed.Editable.Border'}" />
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>
