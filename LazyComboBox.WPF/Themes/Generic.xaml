@@ -23,7 +23,7 @@
 					<Setter Property="ItemsPanel">
 						<Setter.Value>
 							<ItemsPanelTemplate>
-								<UniformGrid Columns="1" />
+								<VirtualizingStackPanel Orientation="Vertical" />
 							</ItemsPanelTemplate>
 						</Setter.Value>
 					</Setter>
@@ -84,8 +84,8 @@
 							<Border x:Name="PART_SelectedItemColumn" Background="Transparent" Padding="2">
 								<TextBlock Text="{TemplateBinding SelectedItemText}" />
 							</Border>
-							<ProgressBar x:Name="ProgressBar" Grid.Column="1" Visibility="Collapsed" 
-													 Orientation="Horizontal" IsIndeterminate="True" />
+							<ProgressBar x:Name="ProgressBar" Grid.Column="1" Visibility="Visible" Width="40"
+							             Orientation="Horizontal" IsIndeterminate="{TemplateBinding ListUpdating}" />
 							<ToggleButton x:Name="PART_DropDownButton" Grid.Column="2" Focusable="false" ClickMode="Press"
 							              IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
 							              Style="{TemplateBinding DropDownButtonStyle}" />
@@ -96,16 +96,16 @@
 							</Border>-->
 							<TextBox x:Name="PART_TextBox" Grid.Column="0" Visibility="Hidden"
 							         Style="{TemplateBinding TextBoxStyle}"
-							         Text="{Binding TypedText, Delay=500, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" />
+							         Text="{Binding TypedText, Delay=200, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" />
 							<Popup x:Name="PART_Popup" Grid.Column="0" Grid.ColumnSpan="2"
 							       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"
 							       Placement="Bottom" MinHeight="60" MaxHeight="200"
 							       IsOpen="{TemplateBinding IsDropDownOpen}">
 								<Border Style="{TemplateBinding PopupBorderStyle}">
 									<ScrollViewer x:Name="PART_ScrollViewer">
-										<ListView x:Name="PART_ListView" 
-															Style="{TemplateBinding ListStyle}" IsSynchronizedWithCurrentItem="True"
-															ItemsSource="{TemplateBinding ItemsSource}"
+										<ListView x:Name="PART_ListView"
+										          Style="{TemplateBinding ListStyle}" IsSynchronizedWithCurrentItem="True"
+										          ItemsSource="{TemplateBinding ItemsSource}"
 										          SelectionMode="Single" />
 									</ScrollViewer>
 								</Border>

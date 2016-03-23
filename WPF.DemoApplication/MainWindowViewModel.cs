@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LINQtoCSV;
+using uTILLIty.Controls.WPF.LazyComboBox;
 
 namespace uTILLIty.WPF.Demo
 {
@@ -26,7 +26,7 @@ namespace uTILLIty.WPF.Demo
 					Category = "Some Category",
 					SubCategory = "Sub-Category A"
 				};
-				DropDownSource = new[] {SelectedEntry};
+				DropDownSource = new[] { SelectedEntry };
 			}
 		}
 
@@ -48,16 +48,31 @@ namespace uTILLIty.WPF.Demo
 			set { SetValue(value); }
 		}
 
-		public Action<string> Filter { get; }
+		public Action<LookupContext> Filter { get; }
 
-		private void OnFilter(string input)
+		private async void OnFilter(LookupContext ctx)
 		{
-			Debug.WriteLine($"Filtering for '{input}'...");
-			var list = _list.Where(c => c.CompanyName
-				.IndexOf(input, StringComparison.CurrentCultureIgnoreCase) >= 0)
-				.ToList();
-			DropDownSource = list;
-			Status = $"{list.Count} entries contained '{input}'.";
+			await Task.Run(() =>
+			{
+				Status = $"Filtering for '{ctx.Input}'...";
+				var list = _list.Where(c =>
+				{
+					ctx.Token.ThrowIfCancellationRequested();
+					return c.CompanyName.IndexOf(ctx.Input, StringComparison.CurrentCultureIgnoreCase) >= 0;
+				})
+					//.Take(50)
+					.ToList();
+				return list;
+			}, ctx.Token)
+				.ContinueWith(t =>
+				{
+					if (!t.IsCanceled)
+					{
+						var list = t.Result;
+						DropDownSource = list;
+						Status = $"{list.Count} entries contained '{ctx.Input}'.";
+					}
+				}).ConfigureAwait(false);
 		}
 
 		private void LoadData()
@@ -67,7 +82,7 @@ namespace uTILLIty.WPF.Demo
 				//data courtesy of https://data.gov.in/catalog/company-master-data
 				Status = "Loading CSV...";
 				var ctx = new CsvContext();
-				var desc = new CsvFileDescription {SeparatorChar = ',', IgnoreUnknownColumns = true};
+				var desc = new CsvFileDescription { SeparatorChar = ',', IgnoreUnknownColumns = true };
 				_list = ctx.Read<CompanyInfo>("demodata.csv", desc)
 					.OrderBy(i => i.CompanyName)
 					.ToList();

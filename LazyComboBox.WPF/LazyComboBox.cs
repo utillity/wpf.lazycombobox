@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,12 +21,14 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 	public class LazyComboBox : Control, INotifyPropertyChanged
 	{
 		private ICollectionView _itemsView;
-		private ScrollViewer _scroller;
 		private ListView _listView;
+		private ScrollViewer _scroller;
 		private Border _selItemCol;
 		private TextBox _textBox;
 
 		private bool _textChangedFromCode;
+
+		private CancellationTokenSource _token;
 
 		static LazyComboBox()
 		{
@@ -128,20 +131,23 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			if (_textChangedFromCode && !ListUpdating)
 				return;
 			//Debug.WriteLine("Text changed by user");
-			var action = FilterAction;
+			var action = LookupAction;
 			if (action != null)
 			{
 				try
 				{
-					ListUpdating = true;
-					var text = _textBox.Text;
-					await Task.Run(() => { action.Invoke(text); }); //.ConfigureAwait(true);
+					_token?.Cancel(true);
+					Dispatcher.InvokeAsync(() => ListUpdating = true);
+					var input = _textBox.Text;
+					_token = new CancellationTokenSource();
+					var ctx = new LookupContext(input, _token.Token);
+					await Task.Run(() => { action.Invoke(ctx); }); //.ConfigureAwait(true);
 					//ConfigureAwait must be true to be back in UI thread afterward
 					IsDropDownOpen = true;
 				}
 				finally
 				{
-					ListUpdating = false;
+					Dispatcher.InvokeAsync(() => ListUpdating = false);
 				}
 			}
 		}
@@ -195,10 +201,10 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			.Register(nameof(ListUpdating), typeof (bool), typeof (LazyComboBox)
 			/*, new FrameworkPropertyMetadata(string.Empty, OnListUpdatingChanged)*/);
 
-		internal bool ListUpdating
+		public bool ListUpdating
 		{
 			get { return (bool) GetValue(ListUpdatingProperty); }
-			set { SetValue(ListUpdatingProperty, value); }
+			private set { SetValue(ListUpdatingProperty, value); }
 		}
 
 		#endregion
@@ -294,16 +300,16 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 		#endregion
 
-		#region FilterAction Property
+		#region LookupAction Property
 
-		public static readonly DependencyProperty FilterActionProperty = DependencyProperty
-			.Register(nameof(FilterAction), typeof (Action<string>), typeof (LazyComboBox)
-			/*, new FrameworkPropertyMetadata(string.Empty, OnFilterActionChanged)*/);
+		public static readonly DependencyProperty LookupActionProperty = DependencyProperty
+			.Register(nameof(LookupAction), typeof (Action<LookupContext>), typeof (LazyComboBox)
+			/*, new FrameworkPropertyMetadata(string.Empty, OnLookupActionChanged)*/);
 
-		public Action<string> FilterAction
+		public Action<LookupContext> LookupAction
 		{
-			get { return (Action<string>) GetValue(FilterActionProperty); }
-			set { SetValue(FilterActionProperty, value); }
+			get { return (Action<LookupContext>) GetValue(LookupActionProperty); }
+			set { SetValue(LookupActionProperty, value); }
 		}
 
 		#endregion

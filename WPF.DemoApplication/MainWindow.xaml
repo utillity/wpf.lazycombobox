@@ -372,7 +372,7 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<u:LazyComboBox TextMember="CompanyName" Margin="0,5"
-		                FilterAction="{Binding Filter}"
+		                LookupAction="{Binding Filter}"
 		                SelectedItem="{Binding SelectedEntry}"
 		                ItemsSource="{Binding DropDownSource}" />
 		<ComboBox Grid.Row="1" IsEditable="True" />
