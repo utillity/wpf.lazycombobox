@@ -14,16 +14,16 @@ using System.Windows.Input;
 
 namespace uTILLIty.Controls.WPF.LazyComboBox
 {
-	[TemplatePart(Name = "PART_Popup", Type = typeof (Popup))]
 	[TemplatePart(Name = "PART_TextBox", Type = typeof (TextBox))]
 	[TemplatePart(Name = "PART_ListView", Type = typeof (ListView))]
-	[TemplatePart(Name = "PART_SelectedItemColumn", Type = typeof (Border))]
+	[TemplatePart(Name = "PART_SelectedItemColumn", Type = typeof (FrameworkElement))]
 	public class LazyComboBox : Control, INotifyPropertyChanged
 	{
 		private ICollectionView _itemsView;
 		private ListView _listView;
-		private ScrollViewer _scroller;
-		private Border _selItemCol;
+
+		private object _lookupContextTag;
+		private FrameworkElement _selItemCol;
 		private TextBox _textBox;
 
 		private bool _textChangedFromCode;
@@ -46,9 +46,6 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 					{
 						s.SortDescriptions.Clear();
 						s.GroupDescriptions.Clear();
-						//s.SortDescriptions.Add(new SortDescription(nameof(class.property), ListSortDirection.Ascending));
-						//s.GroupDescriptions.Add(new PropertyGroupDescription(nameof(class.property)));
-						//s.Filter = FilterItemsViewItem;
 					}
 					_itemsView = s;
 				}
@@ -61,17 +58,15 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		public override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
-			_scroller = (ScrollViewer) Template.FindName("PART_ScrollViewer", this);
-			_scroller.ScrollChanged += OnScrolled;
 
-			_selItemCol = (Border) Template.FindName("PART_SelectedItemColumn", this);
+			_selItemCol = (FrameworkElement) Template.FindName("PART_SelectedItemColumn", this);
 			_selItemCol.PreviewMouseLeftButtonDown += OnSelectedItemContentClicked;
 
 			_listView = (ListView) Template.FindName("PART_ListView", this);
+			_listView.AddHandler(ScrollBar.ScrollEvent, new RoutedEventHandler(OnScrolled));
 
 			_textBox = (TextBox) Template.FindName("PART_TextBox", this);
 			_textBox.PreviewKeyDown += OnTextBoxKeyPressed;
-			//_textBox.TextChanged += OnTextChanged;
 			_textBox.LostFocus += OnTextBoxLostFocus;
 		}
 
@@ -83,14 +78,24 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 			switch (e.Key)
 			{
-				case Key.Right:
+				case Key.Home:
+					IsDropDownOpen = true;
+					view.MoveCurrentToFirst();
+					_listView.ScrollIntoView(view.CurrentItem);
+					e.Handled = true;
+					break;
+				case Key.End:
+					IsDropDownOpen = true;
+					view.MoveCurrentToLast();
+					_listView.ScrollIntoView(view.CurrentItem);
+					e.Handled = true;
+					break;
 				case Key.Down:
 					IsDropDownOpen = true;
 					view.MoveCurrentToNext();
 					_listView.ScrollIntoView(view.CurrentItem);
 					e.Handled = true;
 					break;
-				case Key.Left:
 				case Key.Up:
 					IsDropDownOpen = true;
 					view.MoveCurrentToPrevious();
@@ -113,9 +118,14 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			IsEditing = false;
 		}
 
-		private void OnScrolled(object sender, ScrollChangedEventArgs e)
+		private void OnScrolled(object sender, RoutedEventArgs e)
 		{
-			Debug.WriteLine($"Scrolled: VerticalChange={e.VerticalChange}, VerticalOffset={e.VerticalOffset}");
+			var sb = (ScrollBar) e.OriginalSource;
+
+			if (sb.Orientation == Orientation.Horizontal)
+				return;
+
+			Debug.WriteLine($"Scroll Position={sb.Value}, Max={sb.Maximum}");
 		}
 
 		private void OnSelectedItemContentClicked(object sender, MouseButtonEventArgs e)
@@ -126,28 +136,31 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			_textBox.SelectionLength = _textBox.Text?.Length ?? 0;
 		}
 
-		private async void OnTextChanged()
+		private void OnTextChanged()
 		{
-			if (_textChangedFromCode && !ListUpdating)
+			if (_textChangedFromCode)
 				return;
-			//Debug.WriteLine("Text changed by user");
 			var action = LookupAction;
 			if (action != null)
 			{
 				try
 				{
 					_token?.Cancel(true);
-					Dispatcher.InvokeAsync(() => ListUpdating = true);
-					var input = _textBox.Text;
 					_token = new CancellationTokenSource();
-					var ctx = new LookupContext(input, _token.Token);
-					await Task.Run(() => { action.Invoke(ctx); }); //.ConfigureAwait(true);
+					var input = _textBox.Text;
+					ListUpdating = true;
 					//ConfigureAwait must be true to be back in UI thread afterward
+					Task.Run(() =>
+					{
+						var ctx = new LookupContext(input, _token.Token, _lookupContextTag);
+						action.Invoke(ctx);
+						_lookupContextTag = ctx.Tag;
+					});
 					IsDropDownOpen = true;
 				}
 				finally
 				{
-					Dispatcher.InvokeAsync(() => ListUpdating = false);
+					ListUpdating = false;
 				}
 			}
 		}
@@ -289,8 +302,14 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region ItemsSource Property
 
 		public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty
-			.Register(nameof(ItemsSource), typeof (IEnumerable), typeof (LazyComboBox)
-			/*, new FrameworkPropertyMetadata(string.Empty, OnItemsSourceChanged)*/);
+			.Register(nameof(ItemsSource), typeof (IEnumerable), typeof (LazyComboBox),
+				new FrameworkPropertyMetadata(null, OnItemsSourceChanged));
+
+		private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			var t = (LazyComboBox) d;
+			t.ResetItemsView();
+		}
 
 		public IEnumerable ItemsSource
 		{
@@ -306,6 +325,17 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			.Register(nameof(LookupAction), typeof (Action<LookupContext>), typeof (LazyComboBox)
 			/*, new FrameworkPropertyMetadata(string.Empty, OnLookupActionChanged)*/);
 
+		/// <summary>
+		///   This action is called in a background thread to populate the <see cref="ItemsSource" /> with elements
+		///   filtered by the user's input
+		/// </summary>
+		/// <remarks>
+		///   The <see cref="LookupContext" /> provided can hold an arbitrary state object in the <see cref="LookupContext.Tag" />
+		///   property, which will be passed to you on subsequent calls. Also check the
+		///   <see cref="LookupContext.CancellationToken" /> frequently and abort your lookup-operation as soon as possible
+		///   without setting the <see cref="ItemsSource" /> property. This operation is cancelled, if additional user-input
+		///   has occured since calling the LookupAction
+		/// </remarks>
 		public Action<LookupContext> LookupAction
 		{
 			get { return (Action<LookupContext>) GetValue(LookupActionProperty); }

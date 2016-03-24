@@ -23,7 +23,8 @@
 					<Setter Property="ItemsPanel">
 						<Setter.Value>
 							<ItemsPanelTemplate>
-								<VirtualizingStackPanel Orientation="Vertical" />
+								<VirtualizingStackPanel Orientation="Vertical" IsVirtualizing="True" CanHorizontallyScroll="False"
+								                        CanVerticallyScroll="True" />
 							</ItemsPanelTemplate>
 						</Setter.Value>
 					</Setter>
@@ -81,10 +82,14 @@
 								<ColumnDefinition Width="Auto" />
 								<ColumnDefinition Width="Auto" />
 							</Grid.ColumnDefinitions>
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="*" />
+							</Grid.RowDefinitions>
 							<Border x:Name="PART_SelectedItemColumn" Background="Transparent" Padding="2">
 								<TextBlock Text="{TemplateBinding SelectedItemText}" />
 							</Border>
-							<ProgressBar x:Name="ProgressBar" Grid.Column="1" Visibility="Visible" Width="40"
+							<ProgressBar x:Name="ProgressBar" Grid.Column="1" Visibility="Collapsed" Width="40"
 							             Orientation="Horizontal" IsIndeterminate="{TemplateBinding ListUpdating}" />
 							<ToggleButton x:Name="PART_DropDownButton" Grid.Column="2" Focusable="false" ClickMode="Press"
 							              IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
@@ -101,13 +106,11 @@
 							       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"
 							       Placement="Bottom" MinHeight="60" MaxHeight="200"
 							       IsOpen="{TemplateBinding IsDropDownOpen}">
-								<Border Style="{TemplateBinding PopupBorderStyle}">
-									<ScrollViewer x:Name="PART_ScrollViewer">
-										<ListView x:Name="PART_ListView"
-										          Style="{TemplateBinding ListStyle}" IsSynchronizedWithCurrentItem="True"
-										          ItemsSource="{TemplateBinding ItemsSource}"
-										          SelectionMode="Single" />
-									</ScrollViewer>
+								<Border Style="{TemplateBinding PopupBorderStyle}" Grid.Row="1" Grid.ColumnSpan="3">
+									<ListView x:Name="PART_ListView" MaxHeight="200"
+								          Style="{TemplateBinding ListStyle}" IsSynchronizedWithCurrentItem="True"
+								          ItemsSource="{TemplateBinding ItemsSource}"
+								          SelectionMode="Single" />
 								</Border>
 							</Popup>
 						</Grid>

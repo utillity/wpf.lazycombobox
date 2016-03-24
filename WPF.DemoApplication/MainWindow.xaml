@@ -377,7 +377,7 @@
 		                ItemsSource="{Binding DropDownSource}" />
 		<ComboBox Grid.Row="1" IsEditable="True" />
 		<StatusBar Grid.Row="3">
-			<StatusBarItem Content="{Binding Status}" />
+			<StatusBarItem Content="{Binding Status, TargetNullValue='Ready'}" />
 		</StatusBar>
 	</Grid>
 </Window>

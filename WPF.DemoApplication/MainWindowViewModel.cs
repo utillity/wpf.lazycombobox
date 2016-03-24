@@ -26,7 +26,7 @@ namespace uTILLIty.WPF.Demo
 					Category = "Some Category",
 					SubCategory = "Sub-Category A"
 				};
-				DropDownSource = new[] { SelectedEntry };
+				DropDownSource = new[] {SelectedEntry};
 			}
 		}
 
@@ -50,29 +50,21 @@ namespace uTILLIty.WPF.Demo
 
 		public Action<LookupContext> Filter { get; }
 
-		private async void OnFilter(LookupContext ctx)
+		private void OnFilter(LookupContext ctx)
 		{
-			await Task.Run(() =>
+			Status = $"Filtering for '{ctx.Input}'...";
+			var list = _list.Where(c =>
 			{
-				Status = $"Filtering for '{ctx.Input}'...";
-				var list = _list.Where(c =>
-				{
-					ctx.Token.ThrowIfCancellationRequested();
-					return c.CompanyName.IndexOf(ctx.Input, StringComparison.CurrentCultureIgnoreCase) >= 0;
-				})
-					//.Take(50)
-					.ToList();
-				return list;
-			}, ctx.Token)
-				.ContinueWith(t =>
-				{
-					if (!t.IsCanceled)
-					{
-						var list = t.Result;
-						DropDownSource = list;
-						Status = $"{list.Count} entries contained '{ctx.Input}'.";
-					}
-				}).ConfigureAwait(false);
+				ctx.CancellationToken.ThrowIfCancellationRequested();
+				return c.CompanyName.IndexOf(ctx.Input, StringComparison.CurrentCultureIgnoreCase) >= 0;
+			})
+				//.Take(50)
+				.ToList();
+			if (!ctx.CancellationToken.IsCancellationRequested)
+			{
+				DropDownSource = list;
+				Status = $"{list.Count} entries contained '{ctx.Input}'.";
+			}
 		}
 
 		private void LoadData()
@@ -82,7 +74,7 @@ namespace uTILLIty.WPF.Demo
 				//data courtesy of https://data.gov.in/catalog/company-master-data
 				Status = "Loading CSV...";
 				var ctx = new CsvContext();
-				var desc = new CsvFileDescription { SeparatorChar = ',', IgnoreUnknownColumns = true };
+				var desc = new CsvFileDescription {SeparatorChar = ',', IgnoreUnknownColumns = true};
 				_list = ctx.Read<CompanyInfo>("demodata.csv", desc)
 					.OrderBy(i => i.CompanyName)
 					.ToList();

@@ -37,5 +37,7 @@ namespace uTILLIty.WPF.Demo
 
 		[CsvColumn("SUB_CATEGORY", 12, false, null, NumberStyles.Any, 50)]
 		public string SubCategory { get; set; }
+
+		public override string ToString() => $"{CompanyName}";
 	}
 }
