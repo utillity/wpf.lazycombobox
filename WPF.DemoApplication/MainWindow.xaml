@@ -376,6 +376,10 @@
 		                SelectedItem="{Binding SelectedEntry}"
 		                ItemsSource="{Binding DropDownSource}" />
 		<ComboBox Grid.Row="1" IsEditable="True" />
+		<StackPanel Orientation="Vertical" Grid.Row="2" Margin="10">
+			<Label>Selected element:</Label>
+			<ContentPresenter Content="{Binding SelectedEntry}" Height="243" />
+		</StackPanel>
 		<StatusBar Grid.Row="3">
 			<StatusBarItem Content="{Binding Status, TargetNullValue='Ready'}" />
 		</StatusBar>

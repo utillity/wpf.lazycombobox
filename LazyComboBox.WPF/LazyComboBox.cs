@@ -267,7 +267,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 		public static readonly DependencyProperty SelectedItemProperty = DependencyProperty
 			.Register(nameof(SelectedItem), typeof (object), typeof (LazyComboBox)
-				, new FrameworkPropertyMetadata(string.Empty, OnSelectedItemChanged));
+				, new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedItemChanged));
 
 		private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
@@ -289,7 +289,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 		public static readonly DependencyProperty SelectedItemTextProperty = DependencyProperty
 			.Register(nameof(SelectedItemText), typeof (string), typeof (LazyComboBox)
-			/*, new FrameworkPropertyMetadata(string.Empty, OnSelectedItemTextChanged)*/);
+				, new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
 		private string SelectedItemText
 		{
@@ -376,7 +376,9 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 		public static readonly DependencyProperty TypedTextProperty = DependencyProperty
 			.Register(nameof(TypedText), typeof (string), typeof (LazyComboBox)
-				, new FrameworkPropertyMetadata(string.Empty, OnTypedTextChanged));
+				,
+				new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+					OnTypedTextChanged));
 
 		private static void OnTypedTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
