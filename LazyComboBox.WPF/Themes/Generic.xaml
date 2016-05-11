@@ -69,6 +69,7 @@
 				</Style>
 			</Setter.Value>
 		</Setter>
+		<Setter Property="Focusable" Value="True" />
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type controls:LazyComboBox}">
@@ -82,10 +83,6 @@
 								<ColumnDefinition Width="Auto" />
 								<ColumnDefinition Width="Auto" />
 							</Grid.ColumnDefinitions>
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="*" />
-							</Grid.RowDefinitions>
 							<Border x:Name="PART_SelectedItemColumn" Background="Transparent" Padding="2">
 								<TextBlock Text="{TemplateBinding SelectedItemText}" />
 							</Border>
@@ -101,16 +98,16 @@
 							</Border>-->
 							<TextBox x:Name="PART_TextBox" Grid.Column="0" Visibility="Hidden"
 							         Style="{TemplateBinding TextBoxStyle}"
-							         Text="{Binding TypedText, Delay=200, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" />
-							<Popup x:Name="PART_Popup" Grid.Column="0" Grid.ColumnSpan="2"
+							         Text="{Binding Text, Delay=200, RelativeSource={RelativeSource TemplatedParent}, UpdateSourceTrigger=PropertyChanged}" />
+							<Popup x:Name="PART_Popup" Grid.Column="0" Grid.ColumnSpan="2" Focusable="True"
 							       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"
-							       Placement="Bottom" MinHeight="60" MaxHeight="200"
+							       Placement="Bottom" MinHeight="60" MaxHeight="200" StaysOpen="True"
 							       IsOpen="{TemplateBinding IsDropDownOpen}">
-								<Border Style="{TemplateBinding PopupBorderStyle}" Grid.Row="1" Grid.ColumnSpan="3">
+								<Border Style="{TemplateBinding PopupBorderStyle}">
 									<ListView x:Name="PART_ListView" MaxHeight="200"
-								          Style="{TemplateBinding ListStyle}" IsSynchronizedWithCurrentItem="True"
-								          ItemsSource="{TemplateBinding ItemsSource}"
-								          SelectionMode="Single" />
+									          Style="{TemplateBinding ListStyle}" IsSynchronizedWithCurrentItem="True"
+									          ItemsSource="{TemplateBinding ItemsSource}"
+									          SelectionMode="Single" />
 								</Border>
 							</Popup>
 						</Grid>

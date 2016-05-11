@@ -366,21 +366,27 @@
 	</Window.Resources>
 	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto" />
-			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
-		<u:LazyComboBox TextMember="CompanyName" Margin="0,5"
-		                LookupAction="{Binding Filter}"
-		                SelectedItem="{Binding SelectedEntry}"
-		                ItemsSource="{Binding DropDownSource}" />
-		<ComboBox Grid.Row="1" IsEditable="True" />
-		<StackPanel Orientation="Vertical" Grid.Row="2" Margin="10">
-			<Label>Selected element:</Label>
-			<ContentPresenter Content="{Binding SelectedEntry}" Height="243" />
+		<StackPanel Orientation="Vertical" Margin="10" CanVerticallyScroll="True">
+			<Label Margin="0,5,0,0">Editable Lazy Combo-Box:</Label>
+			<u:LazyComboBox TextMember="CompanyName"
+			                LookupAction="{Binding Filter}"
+			                SelectedItem="{Binding SelectedEntry}"
+			                ItemsSource="{Binding DropDownSource}" />
+			<Label Margin="0,5,0,0">DropDown Lazy Combo-Box:</Label>
+			<u:LazyComboBox TextMember="CompanyName"
+			                IsEditable="False"
+			                LookupAction="{Binding Filter}"
+			                SelectedItem="{Binding SelectedEntry}"
+			                ItemsSource="{Binding DropDownSource}" />
+			<Label Margin="0,5,0,0">Standard Combo-Box:</Label>
+			<ComboBox IsEditable="True" />
+			<Label Margin="0,5,0,0">Selected Element:</Label>
+			<ContentPresenter Content="{Binding SelectedEntry}" />
 		</StackPanel>
-		<StatusBar Grid.Row="3">
+		<StatusBar Grid.Row="1">
 			<StatusBarItem Content="{Binding Status, TargetNullValue='Ready'}" />
 		</StatusBar>
 	</Grid>

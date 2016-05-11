@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,7 +40,11 @@ namespace uTILLIty.WPF.Demo
 		public string Status
 		{
 			get { return GetValue<string>(); }
-			set { SetValue(value); }
+			set
+			{
+				SetValue(value);
+				Debug.WriteLine($"Status: {value}");
+			}
 		}
 
 		public ICollection DropDownSource
@@ -52,6 +57,9 @@ namespace uTILLIty.WPF.Demo
 
 		private void OnFilter(LookupContext ctx)
 		{
+			if (_list == null)
+				return;
+
 			Status = $"Filtering for '{ctx.Input}'...";
 			var list = _list.Where(c =>
 			{
@@ -78,7 +86,7 @@ namespace uTILLIty.WPF.Demo
 				_list = ctx.Read<CompanyInfo>("demodata.csv", desc)
 					.OrderBy(i => i.CompanyName)
 					.ToList();
-				SelectedEntry = _list.First();
+				//SelectedEntry = _list.First();
 				Status = $"Loaded {_list.Count:N0} entries";
 			}
 			catch (AggregatedException ex)
