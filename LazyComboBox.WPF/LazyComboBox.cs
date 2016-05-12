@@ -174,9 +174,10 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			if (IsEditable)
 			{
 				IsEditing = true;
-				_textBox.Focus();
-				_textBox.SelectAll();
+				Debug.WriteLine("Opening LazyComboBox DropDown, because Content was clicked");
 				IsDropDownOpen = true;
+				_textBox.SelectAll();
+				_textBox.Focus();
 			}
 			else
 			{
@@ -190,7 +191,6 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 				return;
 			SelectedItem = null;
 			InvokeLookupAction();
-			IsDropDownOpen = true;
 		}
 
 		private void InvokeLookupAction(bool async = true)
@@ -236,11 +236,14 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			try
 			{
 				_textChangedFromCode = true;
-				var curIdx = _textBox.SelectionStart;
+				var curIdx = _textBox?.SelectionStart ?? 0;
 				Text = text;
 				SelectedItemText = text;
-				_textBox.SelectAll();
-				_textBox.SelectionStart = curIdx;
+				if (_textBox != null)
+				{
+					_textBox.SelectAll();
+					_textBox.SelectionStart = curIdx;
+				}
 			}
 			finally
 			{
@@ -330,7 +333,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		private static object OnCoerceSelectedItem(DependencyObject d, object basevalue)
 		{
 			var t = (LazyComboBox) d;
-			if (t.ItemsSource == null && basevalue != null)
+			if (t.ItemsSource == null) // && basevalue != null)
 			{
 				t.UpdateTypedText(basevalue);
 				t.InvokeLookupAction(false);

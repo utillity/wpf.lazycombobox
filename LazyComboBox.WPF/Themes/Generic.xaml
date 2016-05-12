@@ -57,6 +57,7 @@
 									<SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Button.Border" Color="#FF7EB4EA" />
 									<SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="#FF606060" />
 									<SolidColorBrush x:Key="ComboBox.MouseOver.Glyph" Color="#FF000000" />
+									<SolidColorBrush x:Key="ComboBox.Static.Editable.Background" Color="#FFFFFFFF" />
 								</ControlTemplate.Resources>
 								<Border x:Name="Border" Background="{DynamicResource 'ComboBox.Static.Editable.Button.Background'}"
 								        BorderThickness="1" Margin="0" Padding="0"
@@ -85,6 +86,10 @@
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type controls:LazyComboBox}">
 					<ControlTemplate.Resources>
+						<LinearGradientBrush x:Key="ComboBox.Static.Background" EndPoint="0,1" StartPoint="0,0">
+							<GradientStop Color="#FFF0F0F0" Offset="0.0" />
+							<GradientStop Color="#FFE5E5E5" Offset="1.0" />
+						</LinearGradientBrush>
 						<SolidColorBrush x:Key="ComboBox.Static.Border" Color="#FFACACAC" />
 						<SolidColorBrush x:Key="ComboBox.MouseOver.Border" Color="#FF7EB4EA" />
 						<SolidColorBrush x:Key="ComboBox.Pressed.Editable.Border" Color="#FF569DE5" />
