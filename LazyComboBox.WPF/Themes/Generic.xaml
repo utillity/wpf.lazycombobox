@@ -3,17 +3,8 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:controls="clr-namespace:uTILLIty.Controls.WPF.LazyComboBox">
 
-	<SolidColorBrush x:Key="GlyphBrush" Color="Gray" />
-
 	<Style TargetType="{x:Type controls:LazyComboBox}">
-		<Setter Property="Background" Value="{DynamicResource 'ComboBox.Static.Background'}">
-			<!--<Setter.Value>
-				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-					<GradientStop Color="#FFF0F0F0" Offset="0.0"/>
-					<GradientStop Color="#FFE5E5E5" Offset="1.0"/>
-				</LinearGradientBrush>
-			</Setter.Value>-->
-		</Setter>
+		<Setter Property="Background" Value="{DynamicResource 'ComboBox.Static.Background'}" />
 		<Setter Property="BorderBrush" Value="{DynamicResource 'ComboBox.Static.Border'}" />
 		<Setter Property="BorderThickness" Value="1" />
 		<Setter Property="SnapsToDevicePixels" Value="True" />
@@ -53,16 +44,36 @@
 		<Setter Property="DropDownButtonStyle">
 			<Setter.Value>
 				<Style TargetType="{x:Type ToggleButton}">
-					<Setter Property="Foreground" Value="White" />
-					<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlDarkBrushKey}}" />
 					<Setter Property="Template">
 						<Setter.Value>
 							<ControlTemplate TargetType="{x:Type ToggleButton}">
-								<Border Background="{TemplateBinding Background}">
+								<ControlTemplate.Resources>
+									<SolidColorBrush x:Key="ComboBox.Static.Editable.Button.Background" Color="Transparent" />
+									<LinearGradientBrush x:Key="ComboBox.MouseOver.Editable.Button.Background" EndPoint="0,1" StartPoint="0,0">
+										<GradientStop Color="#FFEBF4FC" Offset="0.0" />
+										<GradientStop Color="#FFDCECFC" Offset="1.0" />
+									</LinearGradientBrush>
+									<SolidColorBrush x:Key="ComboBox.Static.Editable.Button.Border" Color="Transparent" />
+									<SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Button.Border" Color="#FF7EB4EA" />
+									<SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="#FF606060" />
+									<SolidColorBrush x:Key="ComboBox.MouseOver.Glyph" Color="#FF000000" />
+								</ControlTemplate.Resources>
+								<Border x:Name="Border" Background="{DynamicResource 'ComboBox.Static.Editable.Button.Background'}"
+								        BorderThickness="1" Margin="0" Padding="0"
+								        BorderBrush="{DynamicResource 'ComboBox.Static.Editable.Button.Border'}">
 									<Path HorizontalAlignment="Center" x:Name="Arrow" VerticalAlignment="Center" Fill="{x:Null}"
-									      Data="M0.5,0.5 L3,6.5 5.5,0.5" Stroke="{TemplateBinding Foreground}" Margin="5,0,5,0" Height="7"
-									      StrokeThickness="2" Stretch="Fill" />
+									      Data="M0.5,0.5 L3,6.5 5.5,0.5" Stroke="{DynamicResource 'ComboBox.Static.Glyph'}" Margin="5"
+									      Height="7" StrokeThickness="1" Stretch="Fill" />
 								</Border>
+								<ControlTemplate.Triggers>
+									<Trigger Property="IsMouseOver" Value="True">
+										<Setter TargetName="Arrow" Property="Stroke" Value="{DynamicResource 'ComboBox.MouseOver.Glyph'}" />
+										<Setter TargetName="Border" Property="Background"
+										        Value="{DynamicResource 'ComboBox.MouseOver.Editable.Button.Background'}" />
+										<Setter TargetName="Border" Property="BorderBrush"
+										        Value="{DynamicResource 'ComboBox.MouseOver.Editable.Button.Border'}" />
+									</Trigger>
+								</ControlTemplate.Triggers>
 							</ControlTemplate>
 						</Setter.Value>
 					</Setter>
@@ -73,6 +84,11 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type controls:LazyComboBox}">
+					<ControlTemplate.Resources>
+						<SolidColorBrush x:Key="ComboBox.Static.Border" Color="#FFACACAC" />
+						<SolidColorBrush x:Key="ComboBox.MouseOver.Border" Color="#FF7EB4EA" />
+						<SolidColorBrush x:Key="ComboBox.Pressed.Editable.Border" Color="#FF569DE5" />
+					</ControlTemplate.Resources>
 					<Border x:Name="MainBorder"
 					        Background="{TemplateBinding Background}"
 					        BorderBrush="{TemplateBinding BorderBrush}"
@@ -114,6 +130,9 @@
 						</Grid>
 					</Border>
 					<ControlTemplate.Triggers>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter Property="BorderBrush" Value="{DynamicResource 'ComboBox.MouseOver.Border'}" />
+						</Trigger>
 						<Trigger Property="ListUpdating" Value="True">
 							<Setter TargetName="ProgressBar" Property="Visibility" Value="Visible" />
 						</Trigger>
