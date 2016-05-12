@@ -90,8 +90,8 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			if (view == null)
 				return;
 
-			Debug.WriteLine($"OnListItemChanged: Setting SelectedItem to {view.CurrentItem}");
-			SelectedItem = view.CurrentItem;
+			Debug.WriteLine($"OnListItemChanged: Setting SelectedItem to {_listView.SelectedItem}");
+			SelectedItem = _listView.SelectedItem;
 		}
 
 		private void OnListClicked(object sender, RoutedEventArgs e)
@@ -100,8 +100,8 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			if (view == null)
 				return;
 
-			Debug.WriteLine($"OnListClicked: Setting SelectedItem to {view.CurrentItem}");
-			SelectedItem = view.CurrentItem;
+			Debug.WriteLine($"OnListClicked: Setting SelectedItem to {_listView.SelectedItem}");
+			SelectedItem = _listView.SelectedItem;
 			IsDropDownOpen = false;
 		}
 
@@ -119,41 +119,32 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			var key = e.Key;
 			switch (key)
 			{
-				case Key.Home:
-					IsDropDownOpen = true;
-					view.MoveCurrentToFirst();
-					_listView.ScrollIntoView(view.CurrentItem);
-					e.Handled = true;
-					break;
-				case Key.End:
-					IsDropDownOpen = true;
-					view.MoveCurrentToLast();
-					_listView.ScrollIntoView(view.CurrentItem);
-					e.Handled = true;
-					break;
 				case Key.Down:
 					IsDropDownOpen = true;
-					view.MoveCurrentToNext();
+					if (_listView.SelectedItem == null)
+						view.MoveCurrentToFirst();
+					else
+						view.MoveCurrentToNext();
 					if (view.IsCurrentAfterLast)
 						view.MoveCurrentToFirst();
+					_listView.SelectedItem = view.CurrentItem;
 					_listView.ScrollIntoView(view.CurrentItem);
-					e.Handled = true;
 					break;
 				case Key.Up:
 					IsDropDownOpen = true;
 					view.MoveCurrentToPrevious();
 					if (view.IsCurrentBeforeFirst)
 						view.MoveCurrentToLast();
+					_listView.SelectedItem = view.CurrentItem;
 					_listView.ScrollIntoView(view.CurrentItem);
-					e.Handled = true;
 					break;
 				case Key.Return:
-					if (view.CurrentItem != null)
+					if (_listView.SelectedItem != null)
 					{
-						Debug.WriteLine($"OnPreviewKeyDown (RETURN): Setting SelectedItem to {view.CurrentItem}");
-						SelectedItem = view.CurrentItem;
+						Debug.WriteLine($"OnPreviewKeyDown (RETURN): Setting SelectedItem to {_listView.SelectedItem}");
+						SelectedItem = _listView.SelectedItem;
 						IsDropDownOpen = false;
-						e.Handled = true;
+						IsEditing = false;
 					}
 					break;
 				default:
@@ -165,6 +156,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		private void OnTextBoxLostFocus(object sender, RoutedEventArgs e)
 		{
 			IsEditing = false;
+			IsDropDownOpen = false;
 		}
 
 		private void OnScrolled(object sender, RoutedEventArgs e)
@@ -184,6 +176,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 				IsEditing = true;
 				_textBox.Focus();
 				_textBox.SelectAll();
+				IsDropDownOpen = true;
 			}
 			else
 			{
@@ -195,6 +188,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		{
 			if (_textChangedFromCode)
 				return;
+			SelectedItem = null;
 			InvokeLookupAction();
 			IsDropDownOpen = true;
 		}
@@ -214,10 +208,12 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 					if (async)
 					{
 						//ConfigureAwait must be true to be back in UI thread afterward
+						Debug.WriteLine("Invoking LookupAction in Background");
 						Task.Run(() => action.Invoke(ctx));
 					}
 					else
 					{
+						Debug.WriteLine("Invoking LookupAction in current thread");
 						action.Invoke(ctx);
 					}
 					_lookupContextTag = ctx.Tag;
@@ -234,14 +230,17 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			string text = null;
 			if (selItem != null)
 			{
-				var pi = TryGetProperty(TextMember, selItem.GetType());
+				var pi = TryGetProperty(DisplayMemberPath, selItem.GetType());
 				text = pi == null ? selItem.ToString() : pi.GetValue(selItem)?.ToString();
 			}
 			try
 			{
 				_textChangedFromCode = true;
+				var curIdx = _textBox.SelectionStart;
 				Text = text;
 				SelectedItemText = text;
+				_textBox.SelectAll();
+				_textBox.SelectionStart = curIdx;
 			}
 			finally
 			{
@@ -367,7 +366,13 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		{
 			var t = (LazyComboBox) d;
 			t.ResetItemsView();
-			t.UpdateTypedText(t.SelectedItem);
+			var view = t.ItemsView;
+			if (t.SelectedItem == null || !view.Contains(t.SelectedItem))
+			{
+				t.SelectedItem = null;
+			}
+			if (!t.IsEditing)
+				t.UpdateTypedText(t.SelectedItem);
 		}
 
 		#endregion
@@ -424,20 +429,6 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 		#endregion
 
-		#region TextMember Property
-
-		public static readonly DependencyProperty TextMemberProperty = DependencyProperty
-			.Register(nameof(TextMember), typeof (string), typeof (LazyComboBox)
-			/*, new FrameworkPropertyMetadata(string.Empty, OnTextMemberChanged)*/);
-
-		public string TextMember
-		{
-			get { return (string) GetValue(TextMemberProperty); }
-			set { SetValue(TextMemberProperty, value); }
-		}
-
-		#endregion
-
 		#region Text Property
 
 		public static readonly DependencyProperty TextProperty = DependencyProperty
@@ -487,7 +478,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			if (t.IsDropDownOpen)
 			{
 				if (t.ItemsSource == null)
-					t.InvokeLookupAction(false);
+					t.InvokeLookupAction(t.SelectedItem == null);
 				t.RaiseDropDownOpened();
 				if (!t.IsEditing)
 					Keyboard.Focus(t);

@@ -105,9 +105,10 @@
 							       IsOpen="{TemplateBinding IsDropDownOpen}">
 								<Border Style="{TemplateBinding PopupBorderStyle}">
 									<ListView x:Name="PART_ListView" MaxHeight="200"
-									          Style="{TemplateBinding ListStyle}" IsSynchronizedWithCurrentItem="True"
+									          Style="{TemplateBinding ListStyle}"
 									          ItemsSource="{TemplateBinding ItemsSource}"
 									          SelectionMode="Single" />
+									<!-- IsSynchronizedWithCurrentItem="True" - causes always first item in list to be selected -->
 								</Border>
 							</Popup>
 						</Grid>

@@ -60,6 +60,11 @@ namespace uTILLIty.WPF.Demo
 			if (_list == null)
 				return;
 
+			if (string.IsNullOrEmpty(ctx.Input))
+			{
+				DropDownSource = _list;
+				return;
+			}
 			Status = $"Filtering for '{ctx.Input}'...";
 			var list = _list.Where(c =>
 			{

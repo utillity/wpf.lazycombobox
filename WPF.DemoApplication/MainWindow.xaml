@@ -371,18 +371,20 @@
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Vertical" Margin="10" CanVerticallyScroll="True">
 			<Label Margin="0,5,0,0">Editable Lazy Combo-Box:</Label>
-			<u:LazyComboBox TextMember="CompanyName"
+			<u:LazyComboBox DisplayMemberPath="CompanyName"
 			                LookupAction="{Binding Filter}"
 			                SelectedItem="{Binding SelectedEntry}"
 			                ItemsSource="{Binding DropDownSource}" />
 			<Label Margin="0,5,0,0">DropDown Lazy Combo-Box:</Label>
-			<u:LazyComboBox TextMember="CompanyName"
+			<u:LazyComboBox DisplayMemberPath="CompanyName"
 			                IsEditable="False"
 			                LookupAction="{Binding Filter}"
 			                SelectedItem="{Binding SelectedEntry}"
 			                ItemsSource="{Binding DropDownSource}" />
 			<Label Margin="0,5,0,0">Standard Combo-Box:</Label>
-			<ComboBox IsEditable="True" />
+			<ComboBox IsEditable="True" DisplayMemberPath="CompanyName"
+			          SelectedItem="{Binding SelectedEntry}"
+			          ItemsSource="{Binding DropDownSource}" />
 			<Label Margin="0,5,0,0">Selected Element:</Label>
 			<ContentPresenter Content="{Binding SelectedEntry}" />
 		</StackPanel>
