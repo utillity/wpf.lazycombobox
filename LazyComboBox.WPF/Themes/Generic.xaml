@@ -135,6 +135,9 @@
 						</Grid>
 					</Border>
 					<ControlTemplate.Triggers>
+						<Trigger Property="IsEditable" Value="True">
+							<Setter Property="Cursor" TargetName="PART_SelectedItemColumn" Value="IBeam" />
+						</Trigger>
 						<Trigger Property="IsMouseOver" Value="True">
 							<Setter Property="BorderBrush" Value="{DynamicResource 'ComboBox.MouseOver.Border'}" />
 						</Trigger>

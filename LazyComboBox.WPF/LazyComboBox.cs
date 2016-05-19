@@ -37,6 +37,12 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 				new FrameworkPropertyMetadata(OnSelectedItemChanged, OnCoerceSelectedItem));
 		}
 
+		protected override void OnDisplayMemberPathChanged(string oldDisplayMemberPath, string newDisplayMemberPath)
+		{
+			base.OnDisplayMemberPathChanged(oldDisplayMemberPath, newDisplayMemberPath);
+			UpdateDisplayProp();
+		}
+
 		private ICollectionView ItemsView
 		{
 			get
@@ -195,6 +201,9 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 		private void InvokeLookupAction(bool async = true)
 		{
+#if DEBUG
+			var source = new StackFrame(1).GetMethod().ToString();
+#endif
 			var action = LookupAction;
 			if (action != null)
 			{
@@ -208,12 +217,12 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 					if (async)
 					{
 						//ConfigureAwait must be true to be back in UI thread afterward
-						Debug.WriteLine("Invoking LookupAction in Background");
+						Debug.WriteLine($"Invoking LookupAction in Background. Caller: {source}");
 						Task.Run(() => action.Invoke(ctx));
 					}
 					else
 					{
-						Debug.WriteLine("Invoking LookupAction in current thread");
+						Debug.WriteLine($"Invoking LookupAction in current thread. Caller: {source}");
 						action.Invoke(ctx);
 					}
 					_lookupContextTag = ctx.Tag;
@@ -225,17 +234,25 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			}
 		}
 
+		private PropertyInfo _displayProp;
+
 		private void UpdateTypedText(object selItem)
 		{
 			string text = null;
 			if (selItem != null)
 			{
-				var pi = TryGetProperty(DisplayMemberPath, selItem.GetType());
-				text = pi == null ? selItem.ToString() : pi.GetValue(selItem)?.ToString();
+				var pi = _displayProp;
+				text = pi == null ? selItem.ToString() : pi.GetValue(selItem)?.ToString() ?? selItem.ToString();
 			}
 			try
 			{
 				_textChangedFromCode = true;
+
+#if DEBUG
+				var source = new StackFrame(1).GetMethod().ToString();
+				Debug.WriteLine($"Updating Text and SelectedItemText to '{text}' (Caller: {source})");
+#endif
+
 				var curIdx = _textBox?.SelectionStart ?? 0;
 				Text = text;
 				SelectedItemText = text;
@@ -249,6 +266,14 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			{
 				_textChangedFromCode = false;
 			}
+		}
+
+		private void UpdateDisplayProp()
+		{
+			var selItem = SelectedItem;
+			_displayProp = string.IsNullOrEmpty(DisplayMemberPath) || selItem == null
+				? null
+				: TryGetProperty(DisplayMemberPath, selItem.GetType());
 		}
 
 		private PropertyInfo TryGetProperty(string propertyName, Type type)
@@ -344,6 +369,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			var t = (LazyComboBox) d;
+			t.UpdateDisplayProp();
 			t.UpdateTypedText(t.SelectedItem);
 		}
 
