@@ -17,6 +17,8 @@ namespace uTILLIty.WPF.Demo
 		public MainWindowViewModel()
 		{
 			Filter = OnFilter;
+			GetTextEntries = OnGetTextEntries;
+			TextEntry = "Three";
 			if (!ApplicationHelper.IsInDesignMode())
 				Task.Run(() => LoadData());
 			else
@@ -29,6 +31,25 @@ namespace uTILLIty.WPF.Demo
 				};
 				DropDownSource = new[] {SelectedEntry};
 			}
+		}
+
+		public string TextEntry
+		{
+			get { return GetValue<string>(); }
+			set { SetValue(value); }
+		}
+
+		public string[] TextEntries
+		{
+			get { return GetValue<string[]>(); }
+			set { SetValue(value); }
+		}
+
+		public Action<LookupContext> GetTextEntries { get; }
+
+		private void OnGetTextEntries(LookupContext ctx)
+		{
+			TextEntries = new[] {"One", "Two", "Three", "Four", "Five"};
 		}
 
 		public object SelectedEntry

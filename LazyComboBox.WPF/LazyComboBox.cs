@@ -371,6 +371,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			var t = (LazyComboBox) d;
 			t.UpdateDisplayProp();
 			t.UpdateTypedText(t.SelectedItem);
+			t.ItemsView?.MoveCurrentTo(e.NewValue);
 		}
 
 		#endregion

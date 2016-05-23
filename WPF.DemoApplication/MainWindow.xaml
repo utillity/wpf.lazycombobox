@@ -5,7 +5,6 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:u="clr-namespace:uTILLIty.Controls.WPF.LazyComboBox;assembly=uTILLIty.Controls.WPF.LazyComboBox"
 	xmlns:local="clr-namespace:uTILLIty.WPF.Demo"
-	xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2"
 	x:Class="uTILLIty.WPF.Demo.MainWindow"
 	mc:Ignorable="d"
 	d:DataContext="{d:DesignInstance IsDesignTimeCreatable=True, Type={x:Type local:MainWindowViewModel}}"
@@ -38,6 +37,10 @@
 			          ItemsSource="{Binding DropDownSource}" />
 			<Label Margin="0,5,0,0">Selected Element:</Label>
 			<ContentPresenter Content="{Binding SelectedEntry}" />
+			<Label Margin="0,5,0,0">Text-Bound Lazy Combo-Box:</Label>
+			<u:LazyComboBox LookupAction="{Binding GetTextEntries}"
+			                SelectedItem="{Binding TextEntry}"
+			                ItemsSource="{Binding TextEntries}" />
 		</StackPanel>
 		<StatusBar Grid.Row="1">
 			<StatusBarItem Content="{Binding Status, TargetNullValue='Ready'}" />
