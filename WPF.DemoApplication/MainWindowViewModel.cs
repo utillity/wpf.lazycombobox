@@ -36,7 +36,7 @@ namespace uTILLIty.WPF.Demo
 		public string TextEntry
 		{
 			get { return GetValue<string>(); }
-			set { SetValue(value); }
+			set { SetValue(value, unifyStringValue: false); }
 		}
 
 		public string[] TextEntries

@@ -128,6 +128,7 @@
 									<ListView x:Name="PART_ListView" MaxHeight="200"
 									          Style="{TemplateBinding ListStyle}"
 									          ItemsSource="{TemplateBinding ItemsSource}"
+									          IsSynchronizedWithCurrentItem="True"
 									          SelectionMode="Single" />
 									<!-- IsSynchronizedWithCurrentItem="True" - causes always first item in list to be selected -->
 								</Border>
@@ -149,6 +150,7 @@
 						</Trigger>
 						<Trigger Property="IsEditing" Value="True">
 							<Setter TargetName="PART_TextBox" Property="Visibility" Value="Visible" />
+							<Setter TargetName="PART_SelectedItemColumn" Property="Visibility" Value="Hidden" />
 							<Setter TargetName="MainBorder" Property="BorderBrush"
 							        Value="{DynamicResource 'ComboBox.Pressed.Editable.Border'}" />
 						</Trigger>

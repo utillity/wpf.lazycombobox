@@ -39,8 +39,9 @@
 			<ContentPresenter Content="{Binding SelectedEntry}" />
 			<Label Margin="0,5,0,0">Text-Bound Lazy Combo-Box:</Label>
 			<u:LazyComboBox LookupAction="{Binding GetTextEntries}"
-			                SelectedItem="{Binding TextEntry}"
+			                Text="{Binding TextEntry}"
 			                ItemsSource="{Binding TextEntries}" />
+			<Label Margin="0,5,0,0" Content="{Binding TextEntry}" ContentStringFormat="{}Selected Text: {0}" />
 		</StackPanel>
 		<StatusBar Grid.Row="1">
 			<StatusBarItem Content="{Binding Status, TargetNullValue='Ready'}" />

@@ -92,12 +92,12 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		private void OnListItemChanged(object sender, RoutedEventArgs e)
 		{
 			//occurs on change of the current item of the view!
-			var view = ItemsView;
-			if (view == null)
-				return;
+			//var view = ItemsView;
+			//if (view == null)
+			//	return;
 
-			Debug.WriteLine($"OnListItemChanged: Setting SelectedItem to {_listView.SelectedItem}");
-			SelectedItem = _listView.SelectedItem;
+			//Debug.WriteLine($"OnListItemChanged: Setting SelectedItem to {_listView.SelectedItem}");
+			//SelectedItem = _listView.SelectedItem;
 		}
 
 		private void OnListClicked(object sender, RoutedEventArgs e)
@@ -195,7 +195,17 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		{
 			if (_textChangedFromCode)
 				return;
-			SelectedItem = null;
+
+			if (IsTextPropertyBound())
+			{
+				SelectedItemText = Text;
+				ItemsView?.MoveCurrentTo(Text);
+			}
+			else
+			{
+				if (SelectedItem != null)
+					SelectedItem = null;
+			}
 			InvokeLookupAction();
 		}
 
@@ -397,11 +407,15 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			var t = (LazyComboBox) d;
 			t.ResetItemsView();
 			var view = t.ItemsView;
-			if (t.SelectedItem == null || !view.Contains(t.SelectedItem))
+			if (t.SelectedItem == null || view == null || !view.Contains(t.SelectedItem))
 			{
 				t.SelectedItem = null;
 			}
-			if (!t.IsEditing)
+			if (t.IsTextPropertyBound())
+			{
+				view?.MoveCurrentTo(t.Text);
+			}
+			else if (!t.IsEditing)
 				t.UpdateTypedText(t.SelectedItem);
 		}
 
@@ -477,6 +491,11 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		{
 			get { return (string) GetValue(TextProperty); }
 			set { SetValue(TextProperty, value); }
+		}
+
+		private bool IsTextPropertyBound()
+		{
+			return BindingOperations.GetBinding(this, TextProperty) != null;
 		}
 
 		#endregion
