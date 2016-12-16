@@ -1,8 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using LINQtoCSV;
 using uTILLIty.Controls.WPF.LazyComboBox;
@@ -11,12 +12,14 @@ namespace uTILLIty.WPF.Demo
 {
 	public class MainWindowViewModel : NotifyPropertyChangedBase
 	{
+		private const int PageCount = 10;
 		private List<CompanyInfo> _list;
 
 		public MainWindowViewModel()
 		{
 			Filter = OnFilter;
-			LoadMore = OnLoadMore;
+			TextEntry = "Three";
+			TextEntries = new[] {"One", "Two", "Three", "Four", "Five"};
 			if (!ApplicationHelper.IsInDesignMode())
 				Task.Run(() => LoadData());
 			else
@@ -27,8 +30,20 @@ namespace uTILLIty.WPF.Demo
 					Category = "Some Category",
 					SubCategory = "Sub-Category A"
 				};
-				DropDownSource = new[] {SelectedEntry};
+				_list = new List<CompanyInfo> {(CompanyInfo) SelectedEntry};
 			}
+		}
+
+		public string TextEntry
+		{
+			get { return GetValue<string>(); }
+			set { SetValue(value, unifyStringValue: false); }
+		}
+
+		public string[] TextEntries
+		{
+			get { return GetValue<string[]>(); }
+			set { SetValue(value); }
 		}
 
 		public object SelectedEntry
@@ -40,50 +55,59 @@ namespace uTILLIty.WPF.Demo
 		public string Status
 		{
 			get { return GetValue<string>(); }
-			set { SetValue(value); }
-		}
-
-		public ICollection DropDownSource
-		{
-			get { return GetValue<ICollection>(); }
-			set { SetValue(value); }
-		}
-
-		public Action<LookupContext> Filter { get; }
-		public Action<LookupContext> LoadMore { get; }
-
-		private void OnFilter(LookupContext ctx)
-		{
-			Status = $"Filtering for '{ctx.Input}'...";
-			var list = _list.Where(c =>
+			set
 			{
-				ctx.CancellationToken.ThrowIfCancellationRequested();
-				return c.CompanyName.IndexOf(ctx.Input, StringComparison.CurrentCultureIgnoreCase) >= 0;
-			})
-				//.Take(50)
-				.ToList();
-			if (!ctx.CancellationToken.IsCancellationRequested)
-			{
-				DropDownSource = list;
-				Status = $"{list.Count} entries contained '{ctx.Input}'.";
+				SetValue(value);
+				Debug.WriteLine($"Status: {value}");
 			}
 		}
 
-		private void OnLoadMore(LookupContext ctx)
+		//public ICollection DropDownSource
+		//{
+		//	get { return GetValue<ICollection>(); }
+		//	set { SetValue(value); }
+		//}
+
+		public Action<LookupContext> Filter { get; }
+
+		private void OnFilter(LookupContext ctx)
 		{
-			Status = $"Loading more for '{ctx.Input}'...";
-			//var list = _list.Where(c =>
-			//{
-			//	ctx.CancellationToken.ThrowIfCancellationRequested();
-			//	return c.CompanyName.IndexOf(ctx.Input, StringComparison.CurrentCultureIgnoreCase) >= 0;
-			//})
-			//	//.Take(50)
-			//	.ToList();
-			//if (!ctx.CancellationToken.IsCancellationRequested)
-			//{
-			//	DropDownSource = list;
-			//	Status = $"{list.Count} entries contained '{ctx.Input}'.";
-			//}
+			while (_list == null)
+				Thread.Sleep(20);
+
+			CompanyInfo[] list;
+			if (ctx.NextPageRequested)
+			{
+				list = (CompanyInfo[]) ctx.Tag;
+				var curList = (CompanyInfo[]) ctx.LoadedList;
+				var newList = list.Take(curList.Length + PageCount).ToArray();
+				ctx.LoadedList = newList;
+				ctx.MoreDataAvailable = list.Length > newList.Length;
+				Status = $"Loaded {PageCount} more items for '{ctx.Input}' ({curList.Length} > {newList.Length})";
+				return;
+			}
+
+			if (string.IsNullOrEmpty(ctx.Input))
+			{
+				ctx.Tag = _list;
+				ctx.MoreDataAvailable = true;
+				ctx.LoadedList = _list.Take(PageCount).ToArray();
+				return;
+			}
+
+			Status = $"Filtering for '{ctx.Input}'...";
+			list = _list.Where(c =>
+			{
+				ctx.CancellationToken.ThrowIfCancellationRequested();
+				return c.CompanyName.IndexOf(ctx.Input, StringComparison.CurrentCultureIgnoreCase) >= 0;
+			}).ToArray();
+			if (!ctx.CancellationToken.IsCancellationRequested)
+			{
+				ctx.Tag = list;
+				ctx.MoreDataAvailable = list.Length > PageCount;
+				ctx.LoadedList = list.Take(PageCount).ToArray();
+				Status = $"{list.Length} entries contained '{ctx.Input}'.";
+			}
 		}
 
 		private void LoadData()
@@ -97,7 +121,7 @@ namespace uTILLIty.WPF.Demo
 				_list = ctx.Read<CompanyInfo>("demodata.csv", desc)
 					.OrderBy(i => i.CompanyName)
 					.ToList();
-				SelectedEntry = _list.First();
+				//SelectedEntry = _list.First();
 				Status = $"Loaded {_list.Count:N0} entries";
 			}
 			catch (AggregatedException ex)

@@ -55,6 +55,7 @@
     <Compile Include="Annotations.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DependencyObjectExtensions.cs" />
     <Compile Include="LazyComboBox.cs" />
     <Compile Include="LookupContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

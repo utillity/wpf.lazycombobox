@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections;
+using System.Threading;
 
 namespace uTILLIty.Controls.WPF.LazyComboBox
 {
@@ -12,8 +13,11 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		}
 
 		public string Input { get; internal set; }
-		public bool MoreDataAvailable { get; set; }
 		public CancellationToken CancellationToken { get; internal set; }
 		public object Tag { get; set; }
+		public bool NextPageRequested { get; internal set; }
+
+		public IEnumerable LoadedList { get; set; }
+		public bool MoreDataAvailable { get; set; }
 	}
 }
