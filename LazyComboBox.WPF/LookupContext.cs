@@ -5,15 +5,17 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 {
 	public class LookupContext
 	{
-		internal LookupContext(string input, CancellationToken token, object tag)
+		internal LookupContext(string input, CancellationToken token, object tag, LazyComboBox cb)
 		{
+			SelectedItem = cb.SelectedItem;
 			Input = input;
 			CancellationToken = token;
 			Tag = tag;
 		}
 
-		public string Input { get; internal set; }
-		public CancellationToken CancellationToken { get; internal set; }
+		public object SelectedItem { get; private set; }
+		public string Input { get; private set; }
+		public CancellationToken CancellationToken { get; private set; }
 		public object Tag { get; set; }
 		public bool NextPageRequested { get; internal set; }
 

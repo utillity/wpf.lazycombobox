@@ -314,9 +314,9 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 		private void ExecuteLookup(LookupContext ctx, bool async = true)
 		{
-#if DEBUG
-			var source = new StackFrame(1).GetMethod().ToString();
-#endif
+			//#if DEBUG
+			//var source = new StackFrame(1).GetMethod().ToString();
+			//#endif
 
 			var action = LookupAction;
 			if (action == null)
@@ -325,8 +325,8 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			_token?.Cancel(true);
 			_token = new CancellationTokenSource();
 
-			var input = _textBox.Text;
-			ctx = ctx ?? new LookupContext(input, _token.Token, null);
+			var input = _textBox?.Text;
+			ctx = ctx ?? new LookupContext(input, _token.Token, null, this);
 
 			ListUpdating = true;
 			Action x = () =>
