@@ -23,6 +23,8 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		private ListView _listView;
 
 		private object _lookupContextTag;
+
+		private bool _moreDataAvailable;
 		private FrameworkElement _selItemCol;
 		private TextBox _textBox;
 
@@ -126,6 +128,11 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 				return;
 
 			Debug.WriteLine($"Scroll Position={sb.Value}, Max={sb.Maximum}");
+			var action = LoadMoreAction;
+			if (sb.Value >= sb.Maximum && _moreDataAvailable && action != null)
+			{
+				ExecuteActionAsync(action);
+			}
 		}
 
 		private void OnSelectedItemContentClicked(object sender, MouseButtonEventArgs e)
@@ -145,17 +152,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			{
 				try
 				{
-					_token?.Cancel(true);
-					_token = new CancellationTokenSource();
-					var input = _textBox.Text;
-					ListUpdating = true;
-					//ConfigureAwait must be true to be back in UI thread afterward
-					Task.Run(() =>
-					{
-						var ctx = new LookupContext(input, _token.Token, _lookupContextTag);
-						action.Invoke(ctx);
-						_lookupContextTag = ctx.Tag;
-					});
+					ExecuteActionAsync(action);
 					IsDropDownOpen = true;
 				}
 				finally
@@ -163,6 +160,25 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 					ListUpdating = false;
 				}
 			}
+		}
+
+		private void ExecuteActionAsync(Action<LookupContext> action)
+		{
+			_token?.Cancel(true);
+			_token = new CancellationTokenSource();
+			var input = _textBox.Text;
+			ListUpdating = true;
+			//ConfigureAwait must be true to be back in UI thread afterward
+			Task.Run(() =>
+			{
+				var ctx = new LookupContext(input, _token.Token, _lookupContextTag);
+				action.Invoke(ctx);
+				if (!_token.IsCancellationRequested)
+				{
+					_lookupContextTag = ctx.Tag;
+					_moreDataAvailable = ctx.MoreDataAvailable;
+				}
+			});
 		}
 
 		private void UpdateTypedText()
@@ -340,6 +356,20 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		{
 			get { return (Action<LookupContext>) GetValue(LookupActionProperty); }
 			set { SetValue(LookupActionProperty, value); }
+		}
+
+		#endregion
+
+		#region LoadMoreAction Property
+
+		public static readonly DependencyProperty LoadMoreActionProperty = DependencyProperty
+			.Register(nameof(LoadMoreAction), typeof (Action<LookupContext>), typeof (LazyComboBox)
+			/*, new FrameworkPropertyMetadata(string.Empty, OnLoadMoreActionChanged)*/);
+
+		public Action<LookupContext> LoadMoreAction
+		{
+			get { return (Action<LookupContext>) GetValue(LoadMoreActionProperty); }
+			set { SetValue(LoadMoreActionProperty, value); }
 		}
 
 		#endregion

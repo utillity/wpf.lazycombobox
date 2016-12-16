@@ -372,9 +372,8 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<u:LazyComboBox TextMember="CompanyName" Margin="0,5"
-		                LookupAction="{Binding Filter}"
-		                SelectedItem="{Binding SelectedEntry}"
-		                ItemsSource="{Binding DropDownSource}" />
+		                LookupAction="{Binding Filter}" LoadMoreAction="{Binding LoadMore}"
+		                SelectedItem="{Binding SelectedEntry}" ItemsSource="{Binding DropDownSource}" />
 		<ComboBox Grid.Row="1" IsEditable="True" />
 		<StatusBar Grid.Row="3">
 			<StatusBarItem Content="{Binding Status, TargetNullValue='Ready'}" />

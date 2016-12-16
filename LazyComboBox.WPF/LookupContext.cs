@@ -12,6 +12,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		}
 
 		public string Input { get; internal set; }
+		public bool MoreDataAvailable { get; set; }
 		public CancellationToken CancellationToken { get; internal set; }
 		public object Tag { get; set; }
 	}

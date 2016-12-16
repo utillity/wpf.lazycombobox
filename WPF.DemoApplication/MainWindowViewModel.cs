@@ -16,6 +16,7 @@ namespace uTILLIty.WPF.Demo
 		public MainWindowViewModel()
 		{
 			Filter = OnFilter;
+			LoadMore = OnLoadMore;
 			if (!ApplicationHelper.IsInDesignMode())
 				Task.Run(() => LoadData());
 			else
@@ -49,6 +50,7 @@ namespace uTILLIty.WPF.Demo
 		}
 
 		public Action<LookupContext> Filter { get; }
+		public Action<LookupContext> LoadMore { get; }
 
 		private void OnFilter(LookupContext ctx)
 		{
@@ -65,6 +67,23 @@ namespace uTILLIty.WPF.Demo
 				DropDownSource = list;
 				Status = $"{list.Count} entries contained '{ctx.Input}'.";
 			}
+		}
+
+		private void OnLoadMore(LookupContext ctx)
+		{
+			Status = $"Loading more for '{ctx.Input}'...";
+			//var list = _list.Where(c =>
+			//{
+			//	ctx.CancellationToken.ThrowIfCancellationRequested();
+			//	return c.CompanyName.IndexOf(ctx.Input, StringComparison.CurrentCultureIgnoreCase) >= 0;
+			//})
+			//	//.Take(50)
+			//	.ToList();
+			//if (!ctx.CancellationToken.IsCancellationRequested)
+			//{
+			//	DropDownSource = list;
+			//	Status = $"{list.Count} entries contained '{ctx.Input}'.";
+			//}
 		}
 
 		private void LoadData()
