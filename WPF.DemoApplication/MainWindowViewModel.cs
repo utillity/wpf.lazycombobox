@@ -121,8 +121,8 @@ namespace uTILLIty.WPF.Demo
 				_list = ctx.Read<CompanyInfo>("demodata.csv", desc)
 					.OrderBy(i => i.CompanyName)
 					.ToList();
-				//SelectedEntry = _list.First();
 				Status = $"Loaded {_list.Count:N0} entries";
+				SelectedEntry = _list.Skip(1000).First();
 			}
 			catch (AggregatedException ex)
 			{
