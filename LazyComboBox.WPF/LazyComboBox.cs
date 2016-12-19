@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+
 // ReSharper disable EventNeverSubscribedTo.Global
 
 namespace uTILLIty.Controls.WPF.LazyComboBox
@@ -91,11 +92,11 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			_selItemCol.PreviewMouseLeftButtonDown += OnSelectedItemContentClicked;
 
 			_listView = (ListView) Template.FindName("PART_ListView", this);
-			_listView.ItemContainerGenerator.StatusChanged += OnListViewItemsChanged2;
+			_listView.ItemContainerGenerator.StatusChanged += OnListViewItemsChanged;
 			_listView.AddHandler(ScrollViewer.ScrollChangedEvent, new RoutedEventHandler(OnScrolled));
 			//_listView.AddHandler(ScrollBar.ScrollEvent, new RoutedEventHandler(OnScrolled));
 			_listView.AddHandler(Selector.SelectionChangedEvent, new RoutedEventHandler(OnListItemChanged));
-			_listView.AddHandler(MouseUpEvent, new RoutedEventHandler(OnListClicked));
+			_listView.AddHandler(MouseDownEvent, new RoutedEventHandler(OnListClicked));
 			_listView.AddHandler(LostFocusEvent, new RoutedEventHandler(OnListLostFocus));
 
 			//_popup = (Popup) Template.FindName("PART_Popup", this);
@@ -105,7 +106,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			_textBox.LostFocus += OnTextBoxLostFocus;
 		}
 
-		private void OnListViewItemsChanged2(object sender, EventArgs e)
+		private void OnListViewItemsChanged(object sender, EventArgs e)
 		{
 			switch (_listView.ItemContainerGenerator.Status)
 			{
@@ -123,6 +124,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		private void OnListLostFocus(object sender, RoutedEventArgs e)
 		{
 			IsDropDownOpen = false;
+			UpdateSelection(_listView.SelectedItem);
 		}
 
 		private void OnListItemChanged(object sender, RoutedEventArgs e)
