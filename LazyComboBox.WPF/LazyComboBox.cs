@@ -26,6 +26,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 	// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 	public class LazyComboBox : Control, INotifyPropertyChanged
 	{
+		private bool _applySelection;
 		private PropertyInfo _displayProp;
 
 		private ICollectionView _itemsView;
@@ -73,7 +74,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		///   Occurs when the selection of a <see cref="T:System.Windows.Controls.Primitives.Selector" /> changes.
 		/// </summary>
 		[Category("Behavior")]
-		public event EventHandler SelectedItemChanged;
+		public event EventHandler<SelectedItemChangedEventArgs> SelectedItemChanged;
 
 		public event EventHandler DropDownOpened;
 
@@ -129,6 +130,14 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 			//Debug.WriteLine($"OnListItemChanged: Setting SelectedItem to {_listView.SelectedItem}", nameof(LazyComboBox));
 			//UpdateSelection(_listView.SelectedItem);
+			if (_applySelection)
+			{
+				_applySelection = false;
+				Debug.WriteLine($"OnListClicked: Setting SelectedItem to {_listView.SelectedItem}", nameof(LazyComboBox));
+				UpdateSelection(_listView.SelectedItem);
+				//UpdateTypedText(_listView.SelectedItem);
+				IsDropDownOpen = false;
+			}
 		}
 
 		private void OnListClicked(object sender, RoutedEventArgs e)
@@ -146,9 +155,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 				if (cur == null || cur is ScrollBar)
 					return;
 			}
-			Debug.WriteLine($"OnListClicked: Setting SelectedItem to {_listView.SelectedItem}", nameof(LazyComboBox));
-			UpdateSelection(_listView.SelectedItem);
-			IsDropDownOpen = false;
+			_applySelection = true;
 		}
 
 		private void UpdateSelection(object item)
@@ -182,14 +189,16 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		protected override void OnPreviewKeyDown(KeyEventArgs e)
 		{
 			var view = ItemsView;
-			if (view == null)
-				return;
 
 			var key = e.Key;
 			switch (key)
 			{
+				case Key.Tab:
+					return;
 				case Key.PageDown:
 				{
+					if (view == null)
+						return;
 					var sv = _listView.GetScrollViewer();
 					var pageSize = (int) sv.ViewportHeight + 1;
 					var newPos = view.CurrentPosition + pageSize;
@@ -201,6 +210,8 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 					break;
 				case Key.PageUp:
 				{
+					if (view == null)
+						return;
 					var sv = _listView.GetScrollViewer();
 					var pageSize = (int) sv.ViewportHeight + 1;
 					var newPos = view.CurrentPosition - pageSize;
@@ -210,6 +221,8 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 				}
 					break;
 				case Key.Home:
+					if (view == null)
+						return;
 					if (IsEditable || Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
 						return;
 					IsDropDownOpen = true;
@@ -218,6 +231,8 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 					_listView.ScrollIntoView(view.CurrentItem);
 					break;
 				case Key.End:
+					if (view == null)
+						return;
 					if (IsEditable || Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
 						return;
 					IsDropDownOpen = true;
@@ -227,6 +242,8 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 					break;
 				case Key.Down:
 					IsDropDownOpen = true;
+					if (view == null)
+						return;
 					if (_listView.SelectedItem == null)
 						view.MoveCurrentToFirst();
 					else
@@ -244,6 +261,8 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 					break;
 				case Key.Up:
 					IsDropDownOpen = true;
+					if (view == null)
+						return;
 					view.MoveCurrentToPrevious();
 					if (view.IsCurrentBeforeFirst)
 						view.MoveCurrentToLast();
@@ -251,16 +270,21 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 					_listView.ScrollIntoView(view.CurrentItem);
 					break;
 				case Key.Return:
+					if (view == null)
+						return;
 					if (_listView.SelectedItem != null)
 					{
 						Debug.WriteLine($"OnPreviewKeyDown (RETURN): Setting SelectedItem to {_listView.SelectedItem}",
 							nameof(LazyComboBox));
 						UpdateSelection(_listView.SelectedItem);
+						UpdateTypedText(_listView.SelectedItem);
 					}
 					IsEditing = false;
 					IsDropDownOpen = false;
 					break;
 				default:
+					if (!IsEditing && IsEditable)
+						EnterEditMode();
 					return;
 			}
 			e.Handled = true;
@@ -315,9 +339,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 				{
 					if (IsEditable)
 					{
-						IsEditing = true;
-						_textBox.SelectAll();
-						_textBox.Focus();
+						EnterEditMode();
 						if (e.ClickCount > 1)
 						{
 							Debug.WriteLine("Opening LazyComboBox DropDown, because Content was clicked", nameof(LazyComboBox));
@@ -330,6 +352,13 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 					}
 				}, DispatcherPriority.Input);
 			}).ConfigureAwait(false);
+		}
+
+		private void EnterEditMode()
+		{
+			IsEditing = true;
+			_textBox.SelectAll();
+			_textBox.Focus();
 		}
 
 		private void OnTextChanged()
@@ -475,7 +504,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 				UpdateDisplayProp(selItem);
 			var pi = _displayProp;
 			var text = pi == null ? selItem.ToString() : pi.GetValue(selItem)?.ToString() ?? selItem.ToString();
-			return text ?? string.Empty;
+			return text;
 		}
 
 		private void UpdateDisplayProp(object selItem)
@@ -513,9 +542,9 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			IsDropDownOpen = false;
 		}
 
-		private void RaiseSelectedItemChanged()
+		private void RaiseSelectedItemChanged(object oldItem, object newItem)
 		{
-			SelectedItemChanged?.Invoke(this, EventArgs.Empty);
+			SelectedItemChanged?.Invoke(this, new SelectedItemChangedEventArgs(oldItem, newItem));
 		}
 
 		#region ListUpdating Property
@@ -796,8 +825,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			if (!string.IsNullOrEmpty(t.SelectedValuePath))
 				throw new InvalidOperationException(
 					"Cannot set SelectedItem, when SelectedValuePath has been set. Use SelectedValue instead");
-
-			t.RaiseSelectedItemChanged();
+			t.RaiseSelectedItemChanged(e.OldValue, e.NewValue);
 		}
 
 		public object SelectedItem
