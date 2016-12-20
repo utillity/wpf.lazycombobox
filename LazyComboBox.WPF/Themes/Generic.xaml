@@ -1,12 +1,51 @@
 ﻿<ResourceDictionary
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	xmlns:controls="clr-namespace:uTILLIty.Controls.WPF.LazyComboBox">
+	xmlns:controls="clr-namespace:uTILLIty.Controls.WPF.LazyComboBox"
+	xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+	<!-- Resources to overwrite BEGIN -->
+	<!-- ReSharper disable InconsistentNaming -->
+	<LinearGradientBrush x:Key="LCB.Background" EndPoint="0,1" StartPoint="0,0">
+		<GradientStop Color="#FFF0F0F0" Offset="0.0" />
+		<GradientStop Color="#FFE5E5E5" Offset="1.0" />
+	</LinearGradientBrush>
+	<SolidColorBrush x:Key="LCB.Border" Color="{x:Static SystemColors.ActiveBorderColor}" />
+	<Thickness x:Key="LCB.BorderThickness">1,1,1,1</Thickness>
+
+	<SolidColorBrush x:Key="LCB.Editable.Background" Color="{x:Static SystemColors.WindowColor}" />
+	<SolidColorBrush x:Key="LCB.Editable.Border" Color="#FF569DE5" />
+
+	<SolidColorBrush x:Key="LCB.MouseOver.Border" Color="#FF7EB4EA" />
+
+	<system:Double x:Key="LCB.ProgressBar.Width">50</system:Double>
+
+	<SolidColorBrush x:Key="LCB.DropDown.Border"
+	                 Color="{x:Static SystemColors.ActiveBorderColor}" />
+	<SolidColorBrush x:Key="LCB.DropDown.Background" Color="{x:Static SystemColors.ControlColor}" />
+	<SolidColorBrush x:Key="LCB.DropDown.Foreground" Color="{x:Static SystemColors.ControlTextColor}" />
+	<Thickness x:Key="LCB.DropDown.BorderThickness" Bottom="1" />
+
+	<SolidColorBrush x:Key="LCB.Button.Background" Color="Transparent" />
+	<SolidColorBrush x:Key="LCB.Button.Border" Color="Transparent" />
+	<SolidColorBrush x:Key="LCB.Button.Glyph" Color="#FF606060" />
+	<Thickness x:Key="LCB.Button.Glyph.Margin">5</Thickness>
+	<system:Double x:Key="LCB.Button.Glyph.Height">7</system:Double>
+	<system:Double x:Key="LCB.Button.Glyph.Width">10</system:Double>
+	<system:Double x:Key="LCB.Button.Glyph.Thickness">2</system:Double>
+	<LinearGradientBrush x:Key="LCB.Button.MouseOver.Background" EndPoint="0,1" StartPoint="0,0">
+		<GradientStop Color="#FFEBF4FC" Offset="0.0" />
+		<GradientStop Color="#FFDCECFC" Offset="1.0" />
+	</LinearGradientBrush>
+	<SolidColorBrush x:Key="LCB.Button.MouseOver.Border" Color="#FF7EB4EA" />
+	<SolidColorBrush x:Key="LCB.Button.MouseOver.Glyph" Color="#FF000000" />
+	<!-- ReSharper restore InconsistentNaming -->
+	<!-- Resources to overwrite END -->
 
 	<Style TargetType="{x:Type controls:LazyComboBox}">
-		<Setter Property="Background" Value="{DynamicResource 'ComboBox.Static.Background'}" />
-		<Setter Property="BorderBrush" Value="{DynamicResource 'ComboBox.Static.Border'}" />
-		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="Background" Value="{StaticResource LCB.Background}" />
+		<Setter Property="BorderBrush" Value="{StaticResource LCB.Border}" />
+		<Setter Property="BorderThickness" Value="{StaticResource LCB.BorderThickness}" />
 		<Setter Property="SnapsToDevicePixels" Value="True" />
 		<Setter Property="ListStyle">
 			<Setter.Value>
@@ -25,10 +64,10 @@
 		<Setter Property="PopupBorderStyle">
 			<Setter.Value>
 				<Style TargetType="{x:Type Border}">
-					<Setter Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
-					<Setter Property="BorderThickness" Value="1" />
-					<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" />
-					<Setter Property="TextBlock.Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+					<Setter Property="BorderBrush" Value="{StaticResource LCB.DropDown.Border}" />
+					<Setter Property="BorderThickness" Value="{StaticResource LCB.DropDown.BorderThickness}" />
+					<Setter Property="Background" Value="{StaticResource LCB.DropDown.Background}" />
+					<Setter Property="TextBlock.Foreground" Value="{StaticResource LCB.DropDown.Foreground}" />
 				</Style>
 			</Setter.Value>
 		</Setter>
@@ -37,7 +76,7 @@
 				<Style TargetType="{x:Type TextBox}">
 					<Setter Property="BorderThickness" Value="0" />
 					<Setter Property="Padding" Value="0,2" />
-					<Setter Property="Background" Value="{DynamicResource 'ComboBox.Static.Editable.Background'}" />
+					<Setter Property="Background" Value="{StaticResource LCB.Editable.Background}" />
 				</Style>
 			</Setter.Value>
 		</Setter>
@@ -47,32 +86,22 @@
 					<Setter Property="Template">
 						<Setter.Value>
 							<ControlTemplate TargetType="{x:Type ToggleButton}">
-								<ControlTemplate.Resources>
-									<SolidColorBrush x:Key="ComboBox.Static.Editable.Button.Background" Color="Transparent" />
-									<LinearGradientBrush x:Key="ComboBox.MouseOver.Editable.Button.Background" EndPoint="0,1" StartPoint="0,0">
-										<GradientStop Color="#FFEBF4FC" Offset="0.0" />
-										<GradientStop Color="#FFDCECFC" Offset="1.0" />
-									</LinearGradientBrush>
-									<SolidColorBrush x:Key="ComboBox.Static.Editable.Button.Border" Color="Transparent" />
-									<SolidColorBrush x:Key="ComboBox.MouseOver.Editable.Button.Border" Color="#FF7EB4EA" />
-									<SolidColorBrush x:Key="ComboBox.Static.Glyph" Color="#FF606060" />
-									<SolidColorBrush x:Key="ComboBox.MouseOver.Glyph" Color="#FF000000" />
-									<SolidColorBrush x:Key="ComboBox.Static.Editable.Background" Color="#FFFFFFFF" />
-								</ControlTemplate.Resources>
-								<Border x:Name="Border" Background="{DynamicResource 'ComboBox.Static.Editable.Button.Background'}"
+								<Border x:Name="Border" Background="{StaticResource LCB.Button.Background}"
 								        BorderThickness="1" Margin="0" Padding="0"
-								        BorderBrush="{DynamicResource 'ComboBox.Static.Editable.Button.Border'}">
+								        BorderBrush="{StaticResource LCB.Button.Border}">
 									<Path HorizontalAlignment="Center" x:Name="Arrow" VerticalAlignment="Center" Fill="{x:Null}"
-									      Data="M0.5,0.5 L3,6.5 5.5,0.5" Stroke="{DynamicResource 'ComboBox.Static.Glyph'}" Margin="5"
-									      Height="7" StrokeThickness="1" Stretch="Fill" />
+									      Data="M0.5,0.5 L3,6.5 5.5,0.5" Stroke="{StaticResource LCB.Button.Glyph}"
+									      Margin="{StaticResource LCB.Button.Glyph.Margin}"
+									      Height="{StaticResource LCB.Button.Glyph.Height}"
+									      Width="{StaticResource LCB.Button.Glyph.Width}"
+									      StrokeThickness="{StaticResource LCB.Button.Glyph.Thickness}"
+									      Stretch="Fill" />
 								</Border>
 								<ControlTemplate.Triggers>
 									<Trigger Property="IsMouseOver" Value="True">
-										<Setter TargetName="Arrow" Property="Stroke" Value="{DynamicResource 'ComboBox.MouseOver.Glyph'}" />
-										<Setter TargetName="Border" Property="Background"
-										        Value="{DynamicResource 'ComboBox.MouseOver.Editable.Button.Background'}" />
-										<Setter TargetName="Border" Property="BorderBrush"
-										        Value="{DynamicResource 'ComboBox.MouseOver.Editable.Button.Border'}" />
+										<Setter TargetName="Arrow" Property="Stroke" Value="{StaticResource LCB.Button.MouseOver.Glyph}" />
+										<Setter TargetName="Border" Property="Background" Value="{StaticResource LCB.Button.MouseOver.Background}" />
+										<Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource LCB.Button.MouseOver.Border}" />
 									</Trigger>
 								</ControlTemplate.Triggers>
 							</ControlTemplate>
@@ -85,15 +114,6 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type controls:LazyComboBox}">
-					<ControlTemplate.Resources>
-						<LinearGradientBrush x:Key="ComboBox.Static.Background" EndPoint="0,1" StartPoint="0,0">
-							<GradientStop Color="#FFF0F0F0" Offset="0.0" />
-							<GradientStop Color="#FFE5E5E5" Offset="1.0" />
-						</LinearGradientBrush>
-						<SolidColorBrush x:Key="ComboBox.Static.Border" Color="#FFACACAC" />
-						<SolidColorBrush x:Key="ComboBox.MouseOver.Border" Color="#FF7EB4EA" />
-						<SolidColorBrush x:Key="ComboBox.Pressed.Editable.Border" Color="#FF569DE5" />
-					</ControlTemplate.Resources>
 					<Border x:Name="MainBorder"
 					        Background="{TemplateBinding Background}"
 					        BorderBrush="{TemplateBinding BorderBrush}"
@@ -107,9 +127,11 @@
 							<Border x:Name="PART_SelectedItemColumn" Background="Transparent" Padding="2">
 								<TextBlock Text="{TemplateBinding SelectedItemText}" />
 							</Border>
-							<ProgressBar x:Name="ProgressBar" Grid.Column="1" Visibility="Collapsed" Width="40"
+							<ProgressBar x:Name="ProgressBar" Grid.Column="1" Visibility="Collapsed"
+							             Width="{StaticResource LCB.ProgressBar.Width}"
 							             Orientation="Horizontal" IsIndeterminate="{TemplateBinding ListUpdating}" />
-							<ToggleButton x:Name="PART_DropDownButton" Grid.Column="2" Focusable="false" ClickMode="Press" Margin="0,-1,-1,-1"
+							<ToggleButton x:Name="PART_DropDownButton" Grid.Column="2" Focusable="false" ClickMode="Press"
+							              Margin="0,-1,-1,-1"
 							              IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
 							              Style="{TemplateBinding DropDownButtonStyle}" />
 							<!--<Border x:Name="PART_DropDownButton" Grid.Column="1" Background="Transparent"
@@ -130,14 +152,14 @@
 											<RowDefinition Height="*" />
 											<RowDefinition Height="Auto" />
 										</Grid.RowDefinitions>
-										<!-- IsSynchronizedWithCurrentItem="True" - causes always first item in list to be selected -->
+										<!-- IsSynchronizedWithCurrentItem="True" - always causes first item in list to be selected -->
 										<ListView x:Name="PART_ListView" MaxHeight="200"
-									          Style="{TemplateBinding ListStyle}"
-									          ItemsSource="{TemplateBinding ItemsSource}"
-									          IsSynchronizedWithCurrentItem="True"
-									          SelectionMode="Single" />
+										          Style="{TemplateBinding ListStyle}"
+										          ItemsSource="{TemplateBinding ItemsSource}"
+										          IsSynchronizedWithCurrentItem="True"
+										          SelectionMode="Single" />
 										<ContentPresenter Grid.Row="1" Visibility="{TemplateBinding MoreDataAvailableContentVisibility}"
-																		Content="{TemplateBinding MoreDataAvailableContent}" />
+										                  Content="{TemplateBinding MoreDataAvailableContent}" />
 									</Grid>
 								</Border>
 							</Popup>
@@ -148,7 +170,7 @@
 							<Setter Property="Cursor" TargetName="PART_SelectedItemColumn" Value="IBeam" />
 						</Trigger>
 						<Trigger Property="IsMouseOver" Value="True">
-							<Setter Property="BorderBrush" Value="{DynamicResource 'ComboBox.MouseOver.Border'}" />
+							<Setter Property="BorderBrush" Value="{StaticResource LCB.MouseOver.Border}" />
 						</Trigger>
 						<Trigger Property="ListUpdating" Value="True">
 							<Setter TargetName="ProgressBar" Property="Visibility" Value="Visible" />
@@ -160,7 +182,7 @@
 							<Setter TargetName="PART_TextBox" Property="Visibility" Value="Visible" />
 							<Setter TargetName="PART_SelectedItemColumn" Property="Visibility" Value="Hidden" />
 							<Setter TargetName="MainBorder" Property="BorderBrush"
-							        Value="{DynamicResource 'ComboBox.Pressed.Editable.Border'}" />
+							        Value="{StaticResource LCB.Editable.Border}" />
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>

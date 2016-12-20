@@ -20,6 +20,8 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Vertical" Margin="10" CanVerticallyScroll="True">
+			<Label Margin="0,5,0,0">Selected Element:</Label>
+			<ContentPresenter Content="{Binding SelectedEntry}" />
 			<Label Margin="0,5,0,0">Editable Lazy Combo-Box:</Label>
 			<u:LazyComboBox DisplayMemberPath="CompanyName"
 			                LookupAction="{Binding Filter}"
@@ -32,8 +34,6 @@
 			<Label Margin="0,5,0,0">Standard Combo-Box:</Label>
 			<ComboBox IsEditable="True" DisplayMemberPath="CompanyName"
 			          SelectedItem="{Binding SelectedEntry}" />
-			<Label Margin="0,5,0,0">Selected Element:</Label>
-			<ContentPresenter Content="{Binding SelectedEntry}" />
 			<Label Margin="0,5,0,0">Text-Bound Lazy Combo-Box:</Label>
 			<u:LazyComboBox Text="{Binding TextEntry}" ItemsSource="{Binding TextEntries}" />
 			<Label Margin="0,5,0,0" Content="{Binding TextEntry}" ContentStringFormat="{}Selected Text: {0}" />

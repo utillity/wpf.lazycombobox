@@ -140,10 +140,11 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			var cur = (DependencyObject) e.OriginalSource;
 			while (cur != null)
 			{
-				//Debug.WriteLine($"OnListClicked: {cur}", nameof(LazyComboBox));
+				//Debug.WriteLine($"OnListClicked: Source={cur}", nameof(LazyComboBox));
 				cur = VisualTreeHelper.GetParent(cur);
-				if (cur is ScrollBar) return;
 				if (cur is ListViewItem) break;
+				if (cur == null || cur is ScrollBar)
+					return;
 			}
 			Debug.WriteLine($"OnListClicked: Setting SelectedItem to {_listView.SelectedItem}", nameof(LazyComboBox));
 			UpdateSelection(_listView.SelectedItem);
@@ -338,6 +339,8 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 			if (IsTextPropertyBound())
 			{
+				if (TrySelectFirstCandidate())
+					return;
 				SelectedItemText = Text;
 				ItemsView?.MoveCurrentTo(Text);
 			}
@@ -352,13 +355,13 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		private bool TrySelectFirstCandidate()
 		{
 			var text = Text ?? string.Empty;
+			var ctx = _lastContext;
 			//use local list to find candidate
-			if (ItemsSource != null && _lastContext != null && text.StartsWith(_lastContext.Input) &&
-			    !_lastContext.MoreDataAvailable)
+			if (ItemsSource != null && (ctx == null || !ctx.MoreDataAvailable && text.StartsWith(ctx.Input ?? string.Empty)))
 			{
 				var candidates = TryLocateCandidatesByText(text).ToArray();
 				var candidate = candidates.FirstOrDefault();
-				if (candidates.Length > 1)
+				if (candidates.Length > 1 && IsEditing)
 					IsDropDownOpen = true;
 				if (candidate != null)
 				{
@@ -778,8 +781,12 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		private static object OnCoerceSelectedItem(DependencyObject d, object basevalue)
 		{
 			var t = (LazyComboBox) d;
-			if (t.ItemsSource == null)
+			//if (t.ItemsSource == null)
+			if (!t.IsEditing)
+			{
 				t.UpdateTypedText(basevalue);
+				t.ItemsView?.MoveCurrentTo(basevalue);
+			}
 			return basevalue;
 		}
 
@@ -790,17 +797,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 				throw new InvalidOperationException(
 					"Cannot set SelectedItem, when SelectedValuePath has been set. Use SelectedValue instead");
 
-			try
-			{
-				t._textChangedFromCode = true;
-				t.UpdateTypedText(e.NewValue);
-				t.ItemsView?.MoveCurrentTo(e.NewValue);
-				t.RaiseSelectedItemChanged();
-			}
-			finally
-			{
-				t._textChangedFromCode = false;
-			}
+			t.RaiseSelectedItemChanged();
 		}
 
 		public object SelectedItem
