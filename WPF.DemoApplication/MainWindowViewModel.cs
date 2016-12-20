@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -13,7 +12,7 @@ namespace uTILLIty.WPF.Demo
 	public class MainWindowViewModel : NotifyPropertyChangedBase
 	{
 		private const int PageCount = 10;
-		private List<CompanyInfo> _list;
+		private CompanyInfo[] _list;
 
 		public MainWindowViewModel()
 		{
@@ -30,7 +29,7 @@ namespace uTILLIty.WPF.Demo
 					Category = "Some Category",
 					SubCategory = "Sub-Category A"
 				};
-				_list = new List<CompanyInfo> {(CompanyInfo) SelectedEntry};
+				_list = new[] {(CompanyInfo) SelectedEntry};
 			}
 		}
 
@@ -120,8 +119,8 @@ namespace uTILLIty.WPF.Demo
 				var desc = new CsvFileDescription {SeparatorChar = ',', IgnoreUnknownColumns = true};
 				_list = ctx.Read<CompanyInfo>("demodata.csv", desc)
 					.OrderBy(i => i.CompanyName)
-					.ToList();
-				Status = $"Loaded {_list.Count:N0} entries";
+					.ToArray();
+				Status = $"Loaded {_list.Length:N0} entries";
 				SelectedEntry = _list.Skip(1000).First();
 			}
 			catch (AggregatedException ex)

@@ -109,7 +109,7 @@
 							</Border>
 							<ProgressBar x:Name="ProgressBar" Grid.Column="1" Visibility="Collapsed" Width="40"
 							             Orientation="Horizontal" IsIndeterminate="{TemplateBinding ListUpdating}" />
-							<ToggleButton x:Name="PART_DropDownButton" Grid.Column="2" Focusable="false" ClickMode="Press"
+							<ToggleButton x:Name="PART_DropDownButton" Grid.Column="2" Focusable="false" ClickMode="Press" Margin="0,-1,-1,-1"
 							              IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
 							              Style="{TemplateBinding DropDownButtonStyle}" />
 							<!--<Border x:Name="PART_DropDownButton" Grid.Column="1" Background="Transparent"
