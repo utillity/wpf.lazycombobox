@@ -1,8 +1,11 @@
 ﻿<Application x:Class="uTILLIty.WPF.Demo.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:demo="clr-namespace:uTILLIty.WPF.Demo"
              StartupUri="MainWindow.xaml">
-    <Application.Resources>
-         
-    </Application.Resources>
+	<Application.Resources>
+		<DataTemplate DataType="{x:Type demo:EnumItem}">
+			<Label Content="{Binding DisplayName}" />
+		</DataTemplate>
+	</Application.Resources>
 </Application>

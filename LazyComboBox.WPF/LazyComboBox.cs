@@ -20,9 +20,9 @@ using System.Windows.Threading;
 
 namespace uTILLIty.Controls.WPF.LazyComboBox
 {
-	[TemplatePart(Name = "PART_TextBox", Type = typeof (TextBox))]
-	[TemplatePart(Name = "PART_ListView", Type = typeof (ListView))]
-	[TemplatePart(Name = "PART_SelectedItemColumn", Type = typeof (FrameworkElement))]
+	[TemplatePart(Name = "PART_TextBox", Type = typeof(TextBox))]
+	[TemplatePart(Name = "PART_ListView", Type = typeof(ListView))]
+	[TemplatePart(Name = "PART_SelectedItemColumn", Type = typeof(FrameworkElement))]
 	// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 	public class LazyComboBox : Control, INotifyPropertyChanged
 	{
@@ -47,7 +47,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 		static LazyComboBox()
 		{
-			DefaultStyleKeyProperty.OverrideMetadata(typeof (LazyComboBox), new FrameworkPropertyMetadata(typeof (LazyComboBox)));
+			DefaultStyleKeyProperty.OverrideMetadata(typeof(LazyComboBox), new FrameworkPropertyMetadata(typeof(LazyComboBox)));
 		}
 
 		private ICollectionView ItemsView
@@ -160,24 +160,15 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 		private void UpdateSelection(object item)
 		{
+			Debug.WriteLine($"Updating SelectedItem to {item}", nameof(LazyComboBox));
+			SelectedItem = item;
+
 			var path = SelectedValuePath;
-			if (string.IsNullOrEmpty(path))
+			if (!string.IsNullOrEmpty(path))
 			{
-				Debug.WriteLine($"Updating SelectedItem to {item}", nameof(LazyComboBox));
-				SelectedItem = item;
-			}
-			else
-			{
-				var parts = path.Split('.');
-				foreach (var part in parts)
-				{
-					var pi = item.GetType().GetRuntimeProperty(part);
-					item = pi?.GetValue(item);
-					if (item == null)
-						break;
-				}
-				Debug.WriteLine($"Updating SelectedValue to {item} (from {path})", nameof(LazyComboBox));
-				SelectedValue = item;
+				var value = TryGetPropertyValueByPath(item, path);
+				Debug.WriteLine($"Updating SelectedValue to {value} (from {path})", nameof(LazyComboBox));
+				SelectedValue = value;
 			}
 		}
 
@@ -500,11 +491,32 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		{
 			if (selItem == null)
 				return string.Empty;
+			string text;
+			if (!string.IsNullOrEmpty(DisplayMemberPath))
+			{
+				text = TryGetPropertyValueByPath(selItem, DisplayMemberPath)?.ToString();
+				if (!string.IsNullOrEmpty(text))
+					return text;
+			}
 			if (_displayProp != null && _displayProp.DeclaringType != selItem.GetType())
 				UpdateDisplayProp(selItem);
 			var pi = _displayProp;
-			var text = pi == null ? selItem.ToString() : pi.GetValue(selItem)?.ToString() ?? selItem.ToString();
+			text = pi == null ? selItem.ToString() : pi.GetValue(selItem)?.ToString() ?? selItem.ToString();
 			return text;
+		}
+
+		private object TryGetPropertyValueByPath(object item, string path)
+		{
+			var parts = path.Split('.');
+			var value = item;
+			foreach (var part in parts)
+			{
+				var pi = value.GetType().GetRuntimeProperty(part);
+				value = pi?.GetValue(value);
+				if (value == null)
+					break;
+			}
+			return value;
 		}
 
 		private void UpdateDisplayProp(object selItem)
@@ -550,7 +562,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region ListUpdating Property
 
 		public static readonly DependencyProperty ListUpdatingProperty = DependencyProperty.Register(nameof(ListUpdating),
-			typeof (bool), typeof (LazyComboBox)
+			typeof(bool), typeof(LazyComboBox)
 			/*, new FrameworkPropertyMetadata(string.Empty, OnListUpdatingChanged)*/);
 
 		public bool ListUpdating
@@ -564,7 +576,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region DropDownButtonStyle Property
 
 		public static readonly DependencyProperty DropDownButtonStyleProperty =
-			DependencyProperty.Register("DropDownButtonStyle", typeof (Style), typeof (LazyComboBox));
+			DependencyProperty.Register("DropDownButtonStyle", typeof(Style), typeof(LazyComboBox));
 
 		public Style DropDownButtonStyle
 		{
@@ -577,7 +589,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region PopupBorderStyle Property
 
 		public static readonly DependencyProperty PopupBorderStyleProperty =
-			DependencyProperty.Register(nameof(PopupBorderStyle), typeof (Style), typeof (LazyComboBox)
+			DependencyProperty.Register(nameof(PopupBorderStyle), typeof(Style), typeof(LazyComboBox)
 				/*, new FrameworkPropertyMetadata(string.Empty, OnPopupBorderStyleChanged)*/);
 
 		public Style PopupBorderStyle
@@ -591,7 +603,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region ListStyle Property
 
 		public static readonly DependencyProperty ListStyleProperty = DependencyProperty.Register(nameof(ListStyle),
-			typeof (Style), typeof (LazyComboBox)
+			typeof(Style), typeof(LazyComboBox)
 			/*, new FrameworkPropertyMetadata(string.Empty, OnListStyleChanged)*/);
 
 		public Style ListStyle
@@ -605,7 +617,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region SelectedItemText Property
 
 		public static readonly DependencyProperty SelectedItemTextProperty =
-			DependencyProperty.Register(nameof(SelectedItemText), typeof (string), typeof (LazyComboBox),
+			DependencyProperty.Register(nameof(SelectedItemText), typeof(string), typeof(LazyComboBox),
 				new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
 		private string SelectedItemText
@@ -619,7 +631,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region LookupAction Property
 
 		public static readonly DependencyProperty LookupActionProperty = DependencyProperty.Register(nameof(LookupAction),
-			typeof (Action<LookupContext>), typeof (LazyComboBox)
+			typeof(Action<LookupContext>), typeof(LazyComboBox)
 			/*, new FrameworkPropertyMetadata(string.Empty, OnLookupActionChanged)*/);
 
 		/// <summary>
@@ -645,7 +657,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region IsEditable Property
 
 		public static readonly DependencyProperty IsEditableProperty = DependencyProperty.Register(nameof(IsEditable),
-			typeof (bool), typeof (LazyComboBox), new FrameworkPropertyMetadata(true));
+			typeof(bool), typeof(LazyComboBox), new FrameworkPropertyMetadata(true));
 
 		public bool IsEditable
 		{
@@ -658,7 +670,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region TextBoxStyle Property
 
 		public static readonly DependencyProperty TextBoxStyleProperty = DependencyProperty.Register(nameof(TextBoxStyle),
-			typeof (Style), typeof (LazyComboBox)
+			typeof(Style), typeof(LazyComboBox)
 			/*, new FrameworkPropertyMetadata(string.Empty, OnTextBoxStyleChanged)*/);
 
 		public Style TextBoxStyle
@@ -671,8 +683,8 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 		#region Text Property
 
-		public static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof (string),
-			typeof (LazyComboBox),
+		public static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof(string),
+			typeof(LazyComboBox),
 			new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnTypedTextChanged));
 
 		private static void OnTypedTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -697,7 +709,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region IsEditing Property
 
 		public static readonly DependencyProperty IsEditingProperty = DependencyProperty.Register(nameof(IsEditing),
-			typeof (bool), typeof (LazyComboBox)
+			typeof(bool), typeof(LazyComboBox)
 			/*, new FrameworkPropertyMetadata(string.Empty, OnIsEditingChanged)*/);
 
 		internal bool IsEditing
@@ -711,7 +723,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region MoreDataAvailableContent Property
 
 		public static readonly DependencyProperty MoreDataAvailableContentProperty =
-			DependencyProperty.Register(nameof(MoreDataAvailableContent), typeof (object), typeof (LazyComboBox),
+			DependencyProperty.Register(nameof(MoreDataAvailableContent), typeof(object), typeof(LazyComboBox),
 				new FrameworkPropertyMetadata("..."));
 
 		public object MoreDataAvailableContent
@@ -725,7 +737,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region MoreDataAvailableContentVisibility Property
 
 		public static readonly DependencyProperty MoreDataAvailableContentVisibilityProperty =
-			DependencyProperty.Register(nameof(MoreDataAvailableContentVisibility), typeof (Visibility), typeof (LazyComboBox)
+			DependencyProperty.Register(nameof(MoreDataAvailableContentVisibility), typeof(Visibility), typeof(LazyComboBox)
 				, new FrameworkPropertyMetadata(Visibility.Collapsed));
 
 		private Visibility MoreDataAvailableContentVisibility
@@ -739,7 +751,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region IsDropDownOpen Property
 
 		public static readonly DependencyProperty IsDropDownOpenProperty = DependencyProperty.Register(
-			nameof(IsDropDownOpen), typeof (bool), typeof (LazyComboBox),
+			nameof(IsDropDownOpen), typeof(bool), typeof(LazyComboBox),
 			new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnIsDropDownOpenChanged));
 
 		private static void OnIsDropDownOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -766,7 +778,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region ItemsSource Property
 
 		public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty
-			.Register(nameof(ItemsSource), typeof (IEnumerable), typeof (LazyComboBox)
+			.Register(nameof(ItemsSource), typeof(IEnumerable), typeof(LazyComboBox)
 				, new FrameworkPropertyMetadata(null, OnItemsSourceChanged));
 
 		private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -779,6 +791,10 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			if (!t.IsEditing && item != null && (view == null || !view.Contains(item)))
 			{
 				t.UpdateSelection(null);
+			}
+			else if (!string.IsNullOrEmpty(t.SelectedValuePath) && t.SelectedValue != null)
+			{
+				t.TrySetSelectedItemByValue(t.SelectedValue);
 			}
 
 			if (t.IsTextPropertyBound())
@@ -804,7 +820,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region SelectedItem Property
 
 		public static readonly DependencyProperty SelectedItemProperty = DependencyProperty
-			.Register(nameof(SelectedItem), typeof (object), typeof (LazyComboBox)
+			.Register(nameof(SelectedItem), typeof(object), typeof(LazyComboBox)
 				, new FrameworkPropertyMetadata(null, OnSelectedItemChanged, OnCoerceSelectedItem) {BindsTwoWayByDefault = true});
 
 		private static object OnCoerceSelectedItem(DependencyObject d, object basevalue)
@@ -822,9 +838,6 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
 			var t = (LazyComboBox) d;
-			if (!string.IsNullOrEmpty(t.SelectedValuePath))
-				throw new InvalidOperationException(
-					"Cannot set SelectedItem, when SelectedValuePath has been set. Use SelectedValue instead");
 			t.RaiseSelectedItemChanged(e.OldValue, e.NewValue);
 		}
 
@@ -839,7 +852,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region DisplayMemberPath Property
 
 		public static readonly DependencyProperty DisplayMemberPathProperty = DependencyProperty
-			.Register(nameof(DisplayMemberPath), typeof (string), typeof (LazyComboBox)
+			.Register(nameof(DisplayMemberPath), typeof(string), typeof(LazyComboBox)
 				, new FrameworkPropertyMetadata(null, OnDisplayMemberPathChanged));
 
 		public string DisplayMemberPath
@@ -858,7 +871,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region SelectedValuePath Property
 
 		public static readonly DependencyProperty SelectedValuePathProperty = DependencyProperty
-			.Register(nameof(SelectedValuePath), typeof (string), typeof (LazyComboBox)
+			.Register(nameof(SelectedValuePath), typeof(string), typeof(LazyComboBox)
 				, new FrameworkPropertyMetadata(null, OnSelectedValuePathChanged));
 
 		private static void OnSelectedValuePathChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -878,11 +891,36 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		#region SelectedValue Property
 
 		public static readonly DependencyProperty SelectedValueProperty = DependencyProperty
-			.Register(nameof(SelectedValue), typeof (object), typeof (LazyComboBox)
+			.Register(nameof(SelectedValue), typeof(object), typeof(LazyComboBox)
 				, new FrameworkPropertyMetadata(null, OnSelectedValueChanged) {BindsTwoWayByDefault = true});
 
 		private static void OnSelectedValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
+			var t = (LazyComboBox) d;
+			if (t.SelectedItem == null || !Equals(e.NewValue, t.TryGetPropertyValueByPath(t.SelectedItem, t.SelectedValuePath)))
+				t.TrySetSelectedItemByValue(e.NewValue);
+		}
+
+		private void TrySetSelectedItemByValue(object newValue)
+		{
+			if (ItemsSource == null)
+				ExecuteLookup(null, false);
+
+			var items = ItemsSource?.Cast<object>().ToArray();
+			var path = SelectedValuePath;
+			if (items == null || string.IsNullOrEmpty(SelectedValuePath))
+			{
+				UpdateTypedText(newValue);
+				return;
+			}
+			foreach (var item in items)
+			{
+				var v = TryGetPropertyValueByPath(item, path);
+				if (!Equals(newValue, v))
+					continue;
+				UpdateSelection(item);
+				//SelectedItem = item;
+			}
 		}
 
 		public object SelectedValue

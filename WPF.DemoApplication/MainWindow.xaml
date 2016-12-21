@@ -13,6 +13,12 @@
 		<DataTemplate DataType="{x:Type local:CompanyInfo}">
 			<Label Content="{Binding CompanyName}" />
 		</DataTemplate>
+		<Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}" x:Key="Header">
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Margin" Value="0,5,0,0" />
+			<Setter Property="FontSize" Value="18" />
+			<Setter Property="Foreground" Value="CornflowerBlue" />
+		</Style>
 	</Window.Resources>
 	<Grid>
 		<Grid.RowDefinitions>
@@ -20,23 +26,26 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<StackPanel Orientation="Vertical" Margin="10" CanVerticallyScroll="True">
-			<Label Margin="0,5,0,0">Selected Element:</Label>
-			<ContentPresenter Content="{Binding SelectedEntry}" />
-			<Label Margin="0,5,0,0">Editable Lazy Combo-Box:</Label>
+			<Label Style="{DynamicResource Header}">Selected Element:</Label>
+			<ContentPresenter Content="{Binding SelectedEntry, TargetNullValue='[None]'}" MinHeight="30" />
+			<Label Style="{DynamicResource Header}">Editable Lazy Combo-Box:</Label>
 			<u:LazyComboBox DisplayMemberPath="CompanyName"
 			                LookupAction="{Binding Filter}"
 			                SelectedItem="{Binding SelectedEntry}" />
-			<Label Margin="0,5,0,0">DropDown Lazy Combo-Box:</Label>
+			<Label Style="{DynamicResource Header}">DropDown Lazy Combo-Box:</Label>
 			<u:LazyComboBox DisplayMemberPath="CompanyName"
 			                IsEditable="False"
 			                LookupAction="{Binding Filter}"
 			                SelectedItem="{Binding SelectedEntry}" />
-			<Label Margin="0,5,0,0">Standard Combo-Box:</Label>
+			<Label Style="{DynamicResource Header}">Standard Combo-Box:</Label>
 			<ComboBox IsEditable="True" DisplayMemberPath="CompanyName"
 			          SelectedItem="{Binding SelectedEntry}" />
-			<Label Margin="0,5,0,0">Text-Bound Lazy Combo-Box:</Label>
+			<Label Style="{DynamicResource Header}">Text-Bound Lazy Combo-Box:</Label>
 			<u:LazyComboBox Text="{Binding TextEntry}" ItemsSource="{Binding TextEntries}" />
-			<Label Margin="0,5,0,0" Content="{Binding TextEntry}" ContentStringFormat="{}Selected Text: {0}" />
+			<Label Content="{Binding TextEntry}" ContentStringFormat="{}Selected Text: {0}" />
+			<u:LazyComboBox DisplayMemberPath="DisplayName" SelectedValuePath="Id" IsEditable="False"
+			                SelectedValue="{Binding Gender}" ItemsSource="{Binding GenderTypes}" />
+			<Label Content="{Binding Gender}" ContentStringFormat="{}Selected Gender: {0}" />
 		</StackPanel>
 		<StatusBar Grid.Row="3">
 			<StatusBarItem Content="{Binding Status, TargetNullValue='Ready'}" />

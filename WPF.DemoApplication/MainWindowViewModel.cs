@@ -61,11 +61,13 @@ namespace uTILLIty.WPF.Demo
 			}
 		}
 
-		//public ICollection DropDownSource
-		//{
-		//	get { return GetValue<ICollection>(); }
-		//	set { SetValue(value); }
-		//}
+		public GenderType Gender
+		{
+			get { return GetValue<GenderType>(); }
+			set { SetValue(value); }
+		}
+
+		public EnumItem[] GenderTypes { get; } = EnumItem.BuildFromEnumeration(typeof(GenderType));
 
 		public Action<LookupContext> Filter { get; }
 
