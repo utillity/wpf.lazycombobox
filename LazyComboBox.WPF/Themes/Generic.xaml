@@ -10,8 +10,10 @@
 		<GradientStop Color="#FFF0F0F0" Offset="0.0" />
 		<GradientStop Color="#FFE5E5E5" Offset="1.0" />
 	</LinearGradientBrush>
+	<SolidColorBrush x:Key="LCB.Foreground" Color="{x:Static SystemColors.ControlTextColor}" />
 	<SolidColorBrush x:Key="LCB.Border" Color="{x:Static SystemColors.ActiveBorderColor}" />
 	<Thickness x:Key="LCB.BorderThickness">1,1,1,1</Thickness>
+	<CornerRadius x:Key="LCB.CornerRadius">0</CornerRadius>
 
 	<SolidColorBrush x:Key="LCB.Editable.Background" Color="{x:Static SystemColors.WindowColor}" />
 	<SolidColorBrush x:Key="LCB.Editable.Border" Color="#FF569DE5" />
@@ -43,9 +45,10 @@
 	<!-- Resources to overwrite END -->
 
 	<Style TargetType="{x:Type controls:LazyComboBox}">
-		<Setter Property="Background" Value="{StaticResource LCB.Background}" />
-		<Setter Property="BorderBrush" Value="{StaticResource LCB.Border}" />
-		<Setter Property="BorderThickness" Value="{StaticResource LCB.BorderThickness}" />
+		<Setter Property="Foreground" Value="{DynamicResource LCB.Foreground}" />
+		<Setter Property="Background" Value="{DynamicResource LCB.Background}" />
+		<Setter Property="BorderBrush" Value="{DynamicResource LCB.Border}" />
+		<Setter Property="BorderThickness" Value="{DynamicResource LCB.BorderThickness}" />
 		<Setter Property="SnapsToDevicePixels" Value="True" />
 		<Setter Property="ListStyle">
 			<Setter.Value>
@@ -64,10 +67,10 @@
 		<Setter Property="PopupBorderStyle">
 			<Setter.Value>
 				<Style TargetType="{x:Type Border}">
-					<Setter Property="BorderBrush" Value="{StaticResource LCB.DropDown.Border}" />
-					<Setter Property="BorderThickness" Value="{StaticResource LCB.DropDown.BorderThickness}" />
-					<Setter Property="Background" Value="{StaticResource LCB.DropDown.Background}" />
-					<Setter Property="TextBlock.Foreground" Value="{StaticResource LCB.DropDown.Foreground}" />
+					<Setter Property="BorderBrush" Value="{DynamicResource LCB.DropDown.Border}" />
+					<Setter Property="BorderThickness" Value="{DynamicResource LCB.DropDown.BorderThickness}" />
+					<Setter Property="Background" Value="{DynamicResource LCB.DropDown.Background}" />
+					<Setter Property="TextBlock.Foreground" Value="{DynamicResource LCB.DropDown.Foreground}" />
 				</Style>
 			</Setter.Value>
 		</Setter>
@@ -76,7 +79,7 @@
 				<Style TargetType="{x:Type TextBox}">
 					<Setter Property="BorderThickness" Value="0" />
 					<Setter Property="Padding" Value="0,2" />
-					<Setter Property="Background" Value="{StaticResource LCB.Editable.Background}" />
+					<Setter Property="Background" Value="{DynamicResource LCB.Editable.Background}" />
 				</Style>
 			</Setter.Value>
 		</Setter>
@@ -86,22 +89,22 @@
 					<Setter Property="Template">
 						<Setter.Value>
 							<ControlTemplate TargetType="{x:Type ToggleButton}">
-								<Border x:Name="Border" Background="{StaticResource LCB.Button.Background}"
-								        BorderThickness="1" Margin="0" Padding="0"
-								        BorderBrush="{StaticResource LCB.Button.Border}">
+								<Border x:Name="Border" Background="{DynamicResource LCB.Button.Background}"
+								        BorderThickness="1" Margin="0" Padding="0" CornerRadius="{DynamicResource LCB.CornerRadius}"
+								        BorderBrush="{DynamicResource LCB.Button.Border}">
 									<Path HorizontalAlignment="Center" x:Name="Arrow" VerticalAlignment="Center" Fill="{x:Null}"
-									      Data="M0.5,0.5 L3,6.5 5.5,0.5" Stroke="{StaticResource LCB.Button.Glyph}"
-									      Margin="{StaticResource LCB.Button.Glyph.Margin}"
-									      Height="{StaticResource LCB.Button.Glyph.Height}"
-									      Width="{StaticResource LCB.Button.Glyph.Width}"
-									      StrokeThickness="{StaticResource LCB.Button.Glyph.Thickness}"
+									      Data="M0.5,0.5 L3,6.5 5.5,0.5" Stroke="{DynamicResource LCB.Button.Glyph}"
+									      Margin="{DynamicResource LCB.Button.Glyph.Margin}"
+									      Height="{DynamicResource LCB.Button.Glyph.Height}"
+									      Width="{DynamicResource LCB.Button.Glyph.Width}"
+									      StrokeThickness="{DynamicResource LCB.Button.Glyph.Thickness}"
 									      Stretch="Fill" />
 								</Border>
 								<ControlTemplate.Triggers>
 									<Trigger Property="IsMouseOver" Value="True">
-										<Setter TargetName="Arrow" Property="Stroke" Value="{StaticResource LCB.Button.MouseOver.Glyph}" />
-										<Setter TargetName="Border" Property="Background" Value="{StaticResource LCB.Button.MouseOver.Background}" />
-										<Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource LCB.Button.MouseOver.Border}" />
+										<Setter TargetName="Arrow" Property="Stroke" Value="{DynamicResource LCB.Button.MouseOver.Glyph}" />
+										<Setter TargetName="Border" Property="Background" Value="{DynamicResource LCB.Button.MouseOver.Background}" />
+										<Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource LCB.Button.MouseOver.Border}" />
 									</Trigger>
 								</ControlTemplate.Triggers>
 							</ControlTemplate>
@@ -114,7 +117,7 @@
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="{x:Type controls:LazyComboBox}">
-					<Border x:Name="MainBorder"
+					<Border x:Name="MainBorder" CornerRadius="{DynamicResource LCB.CornerRadius}"
 					        Background="{TemplateBinding Background}"
 					        BorderBrush="{TemplateBinding BorderBrush}"
 					        BorderThickness="{TemplateBinding BorderThickness}">
@@ -128,7 +131,7 @@
 								<TextBlock Text="{TemplateBinding SelectedItemText}" />
 							</Border>
 							<ProgressBar x:Name="ProgressBar" Grid.Column="1" Visibility="Collapsed"
-							             Width="{StaticResource LCB.ProgressBar.Width}"
+							             Width="{DynamicResource LCB.ProgressBar.Width}"
 							             Orientation="Horizontal" IsIndeterminate="{TemplateBinding ListUpdating}" />
 							<ToggleButton x:Name="PART_DropDownButton" Grid.Column="2" Focusable="false" ClickMode="Press"
 							              Margin="0,-1,-1,-1"
@@ -146,7 +149,7 @@
 							       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type Grid}}}"
 							       Placement="Bottom" MinHeight="60" MaxHeight="200" StaysOpen="True"
 							       IsOpen="{TemplateBinding IsDropDownOpen}">
-								<Border Style="{TemplateBinding PopupBorderStyle}">
+								<Border Style="{TemplateBinding PopupBorderStyle}" CornerRadius="{DynamicResource LCB.CornerRadius}">
 									<Grid>
 										<Grid.RowDefinitions>
 											<RowDefinition Height="*" />
@@ -170,7 +173,7 @@
 							<Setter Property="Cursor" TargetName="PART_SelectedItemColumn" Value="IBeam" />
 						</Trigger>
 						<Trigger Property="IsMouseOver" Value="True">
-							<Setter Property="BorderBrush" Value="{StaticResource LCB.MouseOver.Border}" />
+							<Setter Property="BorderBrush" Value="{DynamicResource LCB.MouseOver.Border}" />
 						</Trigger>
 						<Trigger Property="ListUpdating" Value="True">
 							<Setter TargetName="ProgressBar" Property="Visibility" Value="Visible" />
@@ -182,7 +185,7 @@
 							<Setter TargetName="PART_TextBox" Property="Visibility" Value="Visible" />
 							<Setter TargetName="PART_SelectedItemColumn" Property="Visibility" Value="Hidden" />
 							<Setter TargetName="MainBorder" Property="BorderBrush"
-							        Value="{StaticResource LCB.Editable.Border}" />
+							        Value="{DynamicResource LCB.Editable.Border}" />
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>

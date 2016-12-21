@@ -46,6 +46,18 @@
 			<u:LazyComboBox DisplayMemberPath="DisplayName" SelectedValuePath="Id" IsEditable="False"
 			                SelectedValue="{Binding Gender}" ItemsSource="{Binding GenderTypes}" />
 			<Label Content="{Binding Gender}" ContentStringFormat="{}Selected Gender: {0}" />
+			<Border Background="#222" Padding="20">
+				<Border.Resources>
+					<ResourceDictionary>
+						<ResourceDictionary.MergedDictionaries>
+							<ResourceDictionary
+								Source="pack://application:,,,/uTILLIty.Controls.WPF.LazyComboBox;component/Themes/Dark.xaml" />
+						</ResourceDictionary.MergedDictionaries>
+					</ResourceDictionary>
+				</Border.Resources>
+				<u:LazyComboBox DisplayMemberPath="DisplayName" SelectedValuePath="Id" IsEditable="False"
+				                SelectedValue="{Binding Gender}" ItemsSource="{Binding GenderTypes}" />
+			</Border>
 		</StackPanel>
 		<StatusBar Grid.Row="3">
 			<StatusBarItem Content="{Binding Status, TargetNullValue='Ready'}" />

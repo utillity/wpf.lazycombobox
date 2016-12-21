@@ -50,6 +50,10 @@
   <ItemGroup>
     <Compile Include="GenderType.cs" />
     <Compile Include="SelectedItemChangedEventArgs.cs" />
+    <Page Include="Themes\Dark.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

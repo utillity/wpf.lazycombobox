@@ -404,7 +404,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 				yield return c;
 
 			var candidates = ItemsSource?.Cast<object>()
-				.Where(i => GetTextValueOfItem(i).IndexOf(text, StringComparison.OrdinalIgnoreCase) >= 0);
+				.Where(i => GetTextValueOfItem(i).IndexOf(text, StringComparison.OrdinalIgnoreCase) == 0);
 			if (candidates != null)
 			{
 				foreach (var candidate in candidates)
