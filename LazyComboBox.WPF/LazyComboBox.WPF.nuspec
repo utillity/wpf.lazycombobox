@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<package>
+	<!-- http://docs.nuget.org/docs/creating-packages/creating-and-publishing-a-package -->
+	<metadata>
+		<id>LazyComboBox.WPF</id>
+		<!--<id>$id$</id>-->
+		<version>$version$</version>
+		<title>$title$</title>
+		<!--
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+		-->
+		<authors>Tilfried uTILLIty Weissenberger</authors>
+		<owners>Tilfried uTILLIty Weissenberger</owners>
+		<licenseUrl>https://github.com/utillity/wpf.lazycombobox/blob/master/LICENSE</licenseUrl>
+		<projectUrl>https://github.com/utillity/wpf.lazycombobox</projectUrl>
+		<!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>WPF ComboBox with support for lazy-loading and incremental loading of large datasources</description>
+		<releaseNotes>
+			Release 1.0.1.0
+			- signed version
+			Release 1.0.0.0
+			- first release, see sample application on github for usage reference
+		</releaseNotes>
+		<copyright>Copyright 2016-2017 by Tilfried uTILLIty Weissenberger - tilli@weissenberger.at</copyright>
+		<tags>WPF ComboBox DropDown Lazy Databinding</tags>
+		<!--
+    <dependencies>
+      <dependency id="SampleDependency" version="1.0" />
+    </dependencies>
+		-->
+	</metadata>
+	<files>
+		<!-- already included
+		<file src="bin\$configuration$\$id$.xml" target="lib\net45\" />
+		-->
+	</files>
+</package>

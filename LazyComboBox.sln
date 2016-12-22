@@ -1,11 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPF.DemoApplication", "WPF.DemoApplication\WPF.DemoApplication.csproj", "{715FC0F2-2342-4038-846B-1A11C600088F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LazyComboBox.WPF", "LazyComboBox.WPF\LazyComboBox.WPF.csproj", "{983C5509-5815-4DE7-9BD7-D3BD81217D30}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F0D851D9-3061-473D-9227-4623CCD27D51}"
+	ProjectSection(SolutionItems) = preProject
+		LazyComboBox.WPF\LazyComboBox.WPF.nuspec = LazyComboBox.WPF\LazyComboBox.WPF.nuspec
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
