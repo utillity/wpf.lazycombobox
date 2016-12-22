@@ -11,7 +11,18 @@
 	Title="LazyComboBox Demo Application" Height="500" Width="600">
 	<Window.Resources>
 		<DataTemplate DataType="{x:Type local:CompanyInfo}">
-			<Label Content="{Binding CompanyName}" />
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" SharedSizeGroup="CompanyInfo.2" />
+					<ColumnDefinition Width="Auto" SharedSizeGroup="CompanyInfo.3" />
+					<ColumnDefinition Width="Auto" SharedSizeGroup="CompanyInfo.4" />
+				</Grid.ColumnDefinitions>
+				<Label Grid.Column="0" Content="{Binding CompanyName}" Margin="0,0,10,0" />
+				<Label Grid.Column="1" Content="{Binding Class}" Margin="0,0,10,0" />
+				<Label Grid.Column="2" Content="{Binding Category}" Margin="0,0,10,0" />
+				<Label Grid.Column="3" Content="{Binding SubCategory}" />
+			</Grid>
 		</DataTemplate>
 		<Style TargetType="{x:Type Label}" BasedOn="{StaticResource {x:Type Label}}" x:Key="Header">
 			<Setter Property="Padding" Value="0" />

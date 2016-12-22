@@ -59,6 +59,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="Annotations.cs" />
+    <Page Include="Themes\Light.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DependencyObjectExtensions.cs" />
