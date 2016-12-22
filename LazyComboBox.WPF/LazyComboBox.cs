@@ -184,6 +184,26 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			var key = e.Key;
 			switch (key)
 			{
+				case Key.Back:
+				case Key.Delete:
+					if (IsEditing && SelectedItem != null)
+					{
+						if (!string.IsNullOrEmpty(Text))
+						{
+							var tb = _textBox;
+							if (tb != null)
+							{
+								//not everything is selected, DELETE won't clear input
+								if (!Equals(Text, tb.SelectedText))
+									return; //don't set IsHandled to true!
+							}
+						}
+						UpdateSelection(null);
+						UpdateTypedText(null);
+						if (IsDropDownOpen)
+							ExecuteLookup(null);
+					}
+					return;
 				case Key.Tab:
 					return;
 				case Key.PageDown:
