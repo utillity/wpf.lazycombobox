@@ -1,5 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using System.Windows;
+using System.Windows.Controls.Primitives;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
@@ -11,18 +16,24 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 	/// </summary>
 	public class LookupContext
 	{
-		internal LookupContext(string input, CancellationToken token, object tag, LazyComboBox cb)
+	  
+
+	    internal LookupContext(string input, CancellationToken token, object tag, LazyComboBox cb)
 		{
 			SelectedItem = cb.SelectedItem;
 			Input = input;
 			CancellationToken = token;
 			Tag = tag;
-		}
 
-		/// <summary>
-		///   The currently <see cref="LazyComboBox.SelectedItem">selected item</see> of the <see cref="LazyComboBox" />
-		/// </summary>
-		public object SelectedItem { get; private set; }
+         
+        }
+
+
+
+        /// <summary>
+        ///   The currently <see cref="LazyComboBox.SelectedItem">selected item</see> of the <see cref="LazyComboBox" />
+        /// </summary>
+        public object SelectedItem { get; private set; }
 
 		/// <summary>
 		///   The user's input into the Textbox field of the <see cref="LazyComboBox" />

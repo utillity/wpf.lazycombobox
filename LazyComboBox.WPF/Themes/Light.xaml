@@ -23,7 +23,7 @@
 
 	<SolidColorBrush x:Key="LCB.DropDown.Border"
 	                 Color="{x:Static SystemColors.ActiveBorderColor}" />
-	<SolidColorBrush x:Key="LCB.DropDown.Background" Color="{x:Static SystemColors.ControlColor}" />
+	<SolidColorBrush x:Key="LCB.DropDown.Background" Color="{x:Static SystemColors.WindowColor}" />
 	<SolidColorBrush x:Key="LCB.DropDown.Foreground" Color="{x:Static SystemColors.ControlTextColor}" />
 	<Thickness x:Key="LCB.DropDown.BorderThickness">1</Thickness>
 
