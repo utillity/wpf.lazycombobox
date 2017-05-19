@@ -51,7 +51,7 @@
 			<system:Double x:Key="LCB.Button.Glyph.Thickness">2</system:Double>
 			<LinearGradientBrush x:Key="LCB.Button.MouseOver.Background" EndPoint="0,1" StartPoint="0,0">
 				<GradientStop Color="#FF333333" Offset="0.0" />
-				<GradientStop Color="#FF666666" Offset="1.0" />
+				<GradientStop Color="RED" Offset="1.0" />
 			</LinearGradientBrush>
 			<LinearGradientBrush x:Key="LCB.Button.MouseOver.Border" EndPoint="0.5,0.971" StartPoint="0.5,0.042">
 				<GradientStop Color="#4CFFFFFF" Offset="0" />

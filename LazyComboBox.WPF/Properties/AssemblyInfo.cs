@@ -13,5 +13,5 @@ using System.Windows;
 [assembly: AssemblyCopyright("Copyright (c) 2003-2017 by Tilfried Weissenberger | tilli@weissenberger.at")]
 [assembly: ComVisible(false)]
 [assembly: ThemeInfo(ResourceDictionaryLocation.SourceAssembly, ResourceDictionaryLocation.SourceAssembly)]
-[assembly: AssemblyVersion("1.0.2.0")]
-[assembly: AssemblyFileVersion("1.0.2.0")]
+[assembly: AssemblyVersion("1.0.2.1")]
+[assembly: AssemblyFileVersion("1.0.2.1")]
