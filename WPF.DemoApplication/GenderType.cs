@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace uTILLIty.Controls.WPF.LazyComboBox
+namespace uTILLIty.WPF.Demo
 {
 	public enum GenderType
 	{
