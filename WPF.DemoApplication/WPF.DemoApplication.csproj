@@ -71,6 +71,7 @@
     <Compile Include="ApplicationHelper.cs" />
     <Compile Include="CompanyInfo.cs" />
     <Compile Include="EnumItem.cs" />
+    <Compile Include="GenderType.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

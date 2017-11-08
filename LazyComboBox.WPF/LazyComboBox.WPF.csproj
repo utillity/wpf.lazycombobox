@@ -54,7 +54,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GenderType.cs" />
+    <Compile Include="LookupContext.cs" />
     <Compile Include="SelectedItemChangedEventArgs.cs" />
     <Page Include="Themes\Dark.xaml">
       <SubType>Designer</SubType>
@@ -73,7 +73,6 @@
   <ItemGroup>
     <Compile Include="DependencyObjectExtensions.cs" />
     <Compile Include="LazyComboBox.cs" />
-    <Compile Include="LookupContext.cs" />
     <Compile Include="LookupContextImpl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
