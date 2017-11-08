@@ -74,6 +74,7 @@
     <Compile Include="DependencyObjectExtensions.cs" />
     <Compile Include="LazyComboBox.cs" />
     <Compile Include="LookupContext.cs" />
+    <Compile Include="LookupContextImpl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

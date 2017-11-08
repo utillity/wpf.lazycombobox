@@ -31,7 +31,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 		private ICollectionView _itemsView;
 
-		private LookupContext _lastContext;
+		private LookupContextImpl _lastContext;
 
 		private int _lastIdx = -1;
 
@@ -434,7 +434,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			}
 		}
 
-		private void ExecuteLookup(LookupContext ctx, bool async = true, bool selectFirstCandidate = false)
+		private void ExecuteLookup(LookupContextImpl ctx, bool async = true, bool selectFirstCandidate = false)
 		{
 #if DEBUG
 			var source = new StackFrame(1).GetMethod().ToString();
@@ -449,7 +449,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 			_token = new CancellationTokenSource();
 
 			var input = _textBox?.Text;
-			ctx = ctx ?? new LookupContext(input, _token.Token, null, this);
+			ctx = ctx ?? new LookupContextImpl(input, _token.Token, null, this);
 
 			ListUpdating = true;
 			Action x = () =>
