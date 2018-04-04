@@ -450,6 +450,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 
 			var input = _textBox?.Text;
 			ctx = ctx ?? new LookupContext(input, _token.Token, null, this);
+			ctx.CancellationToken = _token.Token;
 
 			ListUpdating = true;
 			Action x = () =>

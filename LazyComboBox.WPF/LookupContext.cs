@@ -33,7 +33,7 @@ namespace uTILLIty.Controls.WPF.LazyComboBox
 		///   A <see cref="CancellationToken" /> to periodically check for cancellation, in case the user continued
 		///   to enter data and a new lookup-request needs to be started
 		/// </summary>
-		public CancellationToken CancellationToken { get; private set; }
+		public CancellationToken CancellationToken { get; internal set; }
 
 		/// <summary>
 		///   An arbitrary state-object which is passed on subsequent requests to <see cref="LazyComboBox.LookupAction" />, if the
